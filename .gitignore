@@ -57,3 +57,19 @@ custom.py
 
 /external/bin
 /.idea/
+
+# Per-agent GitHub tokens, one file per agent: .agents/secrets/github_token.claude
+# and so on. The directory is ignored wholesale so a token for an agent added
+# later can never be committed by accident.
+.agents/secrets/*
+!.agents/secrets/.gitkeep
+*.token
+*.secret
+
+# Per-branch agent session worktrees. Root checkout stays on main.
+.agents/worktrees/
+
+# Per-machine agent settings. The shared ones (.claude/settings.json,
+# .claude/output-styles/) are committed on purpose - they are what keeps the
+# response style enforced for everyone.
+.claude/settings.local.json
