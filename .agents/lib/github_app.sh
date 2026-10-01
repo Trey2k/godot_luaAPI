@@ -16,18 +16,99 @@
 # shellcheck source=./agent.sh
 # agent.sh must already be sourced by the caller: lua_agent, lua_credential_file.
 
+# Which GitHub owner's app this machine should use. More than one person can run
+# the same agent against this repo, so the agent name alone does not identify an
+# app. Order: $LUA_APP_OWNER, then .agents/secrets/app_owner, then nothing, which
+# is fine as long as the registry holds exactly one app for this agent.
+lua_app_owner() {
+  if [[ -n "${LUA_APP_OWNER:-}" ]]; then
+    printf '%s' "${LUA_APP_OWNER,,}"
+    return 0
+  fi
+
+  local file owner
+  # A linked worktree has no ignored files of its own, so fall back to the main
+  # checkout, the same way credentials resolve.
+  for file in "${AGENTS_DIR}/secrets/app_owner" "$(lua_app_owner_path)"; do
+    if [[ -n "$file" && -f "$file" ]]; then
+      owner="$(tr -d '[:space:]' < "$file")"
+      [[ -n "$owner" ]] || continue
+      printf '%s' "${owner,,}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Where the owner marker belongs: the main checkout, never a worktree.
+lua_app_owner_path() {
+  local root
+  root="$(lua_main_root "$AGENTS_DIR" 2>/dev/null)" || return 0
+  printf '%s/.agents/secrets/app_owner' "$root"
+}
+
+# App id for <owner>.<agent>. With no owner set, a single registry entry for this
+# agent is used; two or more is ambiguous and refused rather than guessed, since
+# guessing would authenticate as somebody else's app.
 lua_app_id() {
-  local agent="$1" var
-  var="GITHUB_APP_ID_${agent}"
-  printf '%s' "${!var:-}"
+  local agent="${1,,}" owner key matches=()
+
+  if owner="$(lua_app_owner)"; then
+    key="${owner}.${agent}"
+    if [[ -z "${GITHUB_APP_IDS[$key]:-}" ]]; then
+      # Refuse rather than fall back. A typo here would otherwise end up
+      # authenticating with whatever token happens to be on this machine.
+      cat >&2 <<EOF
+Error: no app registered for '$key' in .agents/apps.conf.
+
+Registered: ${!GITHUB_APP_IDS[*]}
+
+Fix the owner in $(lua_app_owner_path), or in LUA_APP_OWNER, or add your app to
+.agents/apps.conf. Not falling back to another credential.
+EOF
+      return 1
+    fi
+    printf '%s' "${GITHUB_APP_IDS[$key]}"
+    return 0
+  fi
+
+  for key in "${!GITHUB_APP_IDS[@]}"; do
+    [[ "${key##*.}" == "$agent" ]] && matches+=("$key")
+  done
+
+  if [[ "${#matches[@]}" -eq 1 ]]; then
+    printf '%s' "${GITHUB_APP_IDS[${matches[0]}]}"
+    return 0
+  fi
+
+  if [[ "${#matches[@]}" -gt 1 ]]; then
+    cat >&2 <<EOF
+Error: .agents/apps.conf holds more than one app for agent '$agent':
+
+  ${matches[*]}
+
+Say which one is yours, then retry:
+
+  echo '<your-github-login>' > "$(lua_app_owner_path)"
+
+or set LUA_APP_OWNER for a single command. Never pick another person's app.
+EOF
+    return 1
+  fi
+
+  return 0
 }
 
 # True when this agent has both an app id and a private key, so app auth is
 # possible. Lets the wrappers prefer app auth and fall back to a token.
 lua_app_configured() {
-  local agent
+  local agent id
   agent="$(lua_agent)" || return 1
-  [[ -n "$(lua_app_id "$agent")" ]] || return 1
+  # An ambiguous registry is fatal rather than a reason to fall back: falling
+  # back would authenticate as whatever token is lying around, which is the
+  # opposite of what per-agent credentials are for.
+  id="$(lua_app_id "$agent")" || exit 1
+  [[ -n "$id" ]] || return 1
   [[ -n "$(lua_app_key_file 2>/dev/null)" ]] || return 1
 }
 

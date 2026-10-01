@@ -297,9 +297,28 @@ agent is revoked by deleting its key or uninstalling its app, without disturbing
 Two files per agent, and only one of them is a secret:
 
 ```
-.agents/apps.conf                               app id per agent, committed, not secret
+.agents/apps.conf                               app registry, committed, not secret
 .agents/secrets/github_app_key.<agent>.pem      private key, gitignored, never leaves this machine
+.agents/secrets/app_owner                       which owner's app this machine uses, if ambiguous
 ```
+
+**The registry is keyed `<github-owner>.<agent>`, not by agent name alone**, because more than one
+person can run a Claude agent against this repo and each has their own app:
+
+```bash
+declare -A GITHUB_APP_IDS=(
+  [trey2k.claude]=5154233
+)
+```
+
+With one entry for an agent it is used directly. With several, say which is yours through
+`LUA_APP_OWNER` or `.agents/secrets/app_owner` — one lowercase GitHub login, in the main checkout, not
+in a worktree. **An owner that matches nothing is refused, not fallen back on:** a typo would otherwise
+authenticate with whatever credential is lying around, which is the opposite of the point.
+
+Adding yourself: create an app, install it on this repository, drop its key at
+`.agents/secrets/github_app_key.<agent>.pem`, add a line to the registry, and set `app_owner` if the
+registry now holds more than one app for your agent.
 
 The wrappers exchange that key for an **installation token that expires in an hour**, cached in
 `.agents/secrets/.app_token_cache.<agent>`. That is the point of app auth: a leaked token is dead
@@ -371,7 +390,8 @@ or copy another agent's key.
 them into `gh`'s config.** The wrappers already do this — use them rather than calling `curl` or `gh`
 directly.
 
-`.agents/repo.conf` and `.agents/apps.conf` are non-secret and committed.
+`.agents/repo.conf` and `.agents/apps.conf` are non-secret and committed. `app_owner` is not secret
+either, but it is per-machine, so it stays gitignored alongside the keys.
 
 
 ### What actually keeps an agent in its lane
