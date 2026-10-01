@@ -61,6 +61,17 @@ GDScript-facing Lua bindings for Godot 4, buildable two ways from one source tre
 **module** compiled into Godot, and as a **GDExtension** loaded by a stock editor. See
 [README.md](README.md).
 
+**Where the project stands.** `Trey2k/godot_luaAPI` is a fork of `WeaselGames/godot_luaAPI`, and
+**upstream is archived** and has been for some time. The goal of the work here is to bring the binding
+up to a current Godot version, get it stable, and eventually unarchive upstream. Until then **this
+fork is the project**: it holds the real branches, PRs and issues, and nothing is sent anywhere else.
+
+**Never open a pull request against `WeaselGames/godot_luaAPI`.** GitHub defaults a fork's new PR to
+the parent repository, so this is the easy mistake to make, and an archived repository cannot accept
+one anyway. `gh-agent.sh pr-create` pins base and head to this fork; do not route around it with the
+web UI or a bare `gh pr create`. Upstream is read-only history — read it for context, write nothing
+to it.
+
 - `src/` — the binding. `src/classes/` holds the public classes, `src/lua/` the interpreter glue
 - `doc_classes/*.xml` — the public API documentation, one file per exposed class
 - `external/` — submodules: `godot-cpp`, `lua`, `lua51`, `luaJIT`
@@ -120,8 +131,10 @@ binding without the doc is an incomplete change.
 ## 4. Where facts live
 
 **GitHub issues are the source of truth for anything outstanding.** Open questions, known gaps,
-deferred decisions and TODOs belong at https://github.com/Trey2k/godot_luaAPI/issues, not in a file
-in this repo and not in a comment.
+deferred decisions and TODOs belong at https://github.com/Trey2k/godot_luaAPI/issues — this fork's own
+tracker — not in a file in this repo and not in a comment. The archived upstream tracker is history;
+it may explain why something is the way it is, but nothing outstanding lives there and nothing is
+filed there.
 
 ```bash
 .agents/bin/gh-agent.sh api GET '/repos/Trey2k/godot_luaAPI/issues?state=open'
