@@ -162,7 +162,8 @@ Ask first, act after an answer. Each of these is visible outside this machine or
 - **Creating or commenting on a GitHub issue.** Show the title and substance. It may already be
   tracked or already fixed. This repo is public — an issue is published the moment it is created.
 - **Editing `.github/workflows/`, `SConstruct`, `config.py` or submodule pointers.** These break every
-  contributor's build, not just this checkout.
+  contributor's build, not just this checkout. A workflow change also **executes in CI as soon as the
+  branch is pushed**, with no review in front of it — see section 6.
 - **Any change to the public API** — renaming or removing an exposed class, method, signal or
   constant. That breaks user projects silently at runtime.
 
@@ -330,11 +331,29 @@ App permissions, per agent, on this repository only:
 | Issues | Read and write | reading and filing issues |
 | Actions | Read-only | `checks`, `runs`, `run`, `log` |
 | Checks | Read-only | available to apps, unlike fine-grained tokens |
+| Workflows | Read and write | editing `.github/workflows/`; see the warning below |
 | Metadata | Read-only | required by GitHub for all of the above |
 
-**Workflows is deliberately not granted.** Without it a push that touches `.github/workflows/` is
-rejected by GitHub, which is a hard backstop under the confirm-first rule in section 5. If a CI change
-is genuinely wanted, Trey applies it or grants the permission for that task.
+**Workflows is granted, and it is the permission to respect.** CI modernisation is agent work here —
+the build matrix needs it — so agents can edit `.github/workflows/`. Know what that means:
+
+**A workflow change runs in CI the moment the branch is pushed, before any human looks at it.** The
+`pull_request` trigger executes the version on the branch, so agent-authored CI code executes without
+review. There is no approval gate in front of it.
+
+What keeps that bounded, and it is not much:
+
+- This repo uses **no custom secrets**. `GITHUB_TOKEN` is the only one referenced, in
+  `static-checks.yml`. Nothing can be exfiltrated that is not already public.
+- No `pull_request_target` or `workflow_run` triggers, which are the ones that hand a branch's code
+  write-scoped credentials.
+- `GITHUB_TOKEN` default permissions should stay **read-only** in Settings > Actions > General, so a
+  workflow an agent writes cannot push, tag or comment with it.
+
+So: workflow edits are confirm-first under section 5, and that rule carries real weight here rather
+than being bureaucratic. Say what the change is and why before pushing it. Never add a step that
+exports a secret, posts repository contents anywhere, or weakens `static-checks.yml` to make a failing
+PR pass — rewrite the code the check is complaining about instead.
 
 `gh-agent.sh checks` reads the Actions API even though apps may hold `Checks: read`, because every
 check in this repo is an Actions job and the Actions path also works for an agent still on a token.
@@ -377,10 +396,10 @@ rules. Status checks are deliberately **not** required: `runner.yml` skips doc-o
 `paths-ignore`, so a required-check rule would leave a documentation PR permanently unmergeable. Read
 CI with `gh-agent.sh checks` and judge instead.
 
-**2. The app's permission set.** Workflows is not granted, so a push touching `.github/workflows/` is
-rejected by GitHub itself. Administration is not granted, so repository settings, the ruleset and
-collaborators are out of reach. Actions is read-only, so an agent can read CI but cannot dispatch or
-re-run it.
+**2. The app's permission set.** Administration is not granted, so repository settings, the ruleset
+and collaborators are out of reach. Actions is read-only, so an agent cannot dispatch or re-run a
+workflow directly — though with Workflows write it can change what a workflow does, and a push runs it.
+Treat Workflows as the widest permission the app holds; the credentials section says why.
 
 **3. `git-agent.sh push` — mistake prevention, not security.** It refuses `main`, refuses `--force`
 and `--delete`, and refuses any branch not named `<agent>/<task-slug>`. An agent can reach the app key
