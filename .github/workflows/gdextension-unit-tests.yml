@@ -6,28 +6,29 @@ on:
         description: "Version of godot to be used"
         required: true
         type: string
-  
+
 env:
   BASE_BRANCH: main
 
 jobs:
   gdextension-unit-tests:
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     timeout-minutes: 30
     name: GDExtension Unit Tests
     steps:
       - uses: actions/checkout@v3
       - name: Download godot ${{ inputs.godot_version }}
-        run: wget -O godot.zip https://downloads.tuxfamily.org/godotengine/${{ inputs.godot_version }}/Godot_v${{ inputs.godot_version }}-stable_linux.x86_64.zip
+        run: wget -O godot.zip https://github.com/godotengine/godot/releases/download/${{ inputs.godot_version }}-stable/Godot_v${{ inputs.godot_version }}-stable_linux.x86_64.zip
       - name: Extract godot
         run: |
           7z x godot.zip
           mv *_linux.x86_64 godot
       - name: Download Extension
         id: download-extension
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: gdextension
+          pattern: gdext-lua-*
+          merge-multiple: true
           path: project/
       - name: Run Unit Tests
         run: |
@@ -35,29 +36,30 @@ jobs:
           ./godot --headless --path project/ --editor --quit
           ./godot --headless --path project/
           mv project/log.txt project/extension-log.txt
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: gdextension-test-results
           path: project/extension-log.txt
-    
+
   gdextension-luajit-unit-tests:
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     timeout-minutes: 30
     name: LuaJIT GDExtension Unit Tests
     steps:
       - uses: actions/checkout@v3
       - name: Download godot ${{ inputs.godot_version }}
-        run: wget -O godot.zip https://downloads.tuxfamily.org/godotengine/${{ inputs.godot_version }}/Godot_v${{ inputs.godot_version }}-stable_linux.x86_64.zip
+        run: wget -O godot.zip https://github.com/godotengine/godot/releases/download/${{ inputs.godot_version }}-stable/Godot_v${{ inputs.godot_version }}-stable_linux.x86_64.zip
       - name: Extract godot
         run: |
           7z x godot.zip
           mv *_linux.x86_64 godot
       - name: Download Extension
         id: download-extension
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: gdextension-LuaJIT
+          pattern: gdext-luajit-*
+          merge-multiple: true
           path: project/
       - name: Run Unit Tests
         run: |
@@ -65,7 +67,7 @@ jobs:
           ./godot --headless --path project/ --editor --quit
           ./godot --headless --path project/
           mv project/log.txt project/extension-log.txt
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: gdextension-luajit-test-results
