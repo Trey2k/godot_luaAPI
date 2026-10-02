@@ -42,10 +42,29 @@ source "$AGENTS_DIR/lib/github_app.sh"
 # token expires in an hour.
 if lua_app_configured; then
   AUTH_MODE="app"
-else
+elif [[ "${LUA_ALLOW_PAT:-}" == "1" ]]; then
+  # Opt-in only. A silent downgrade is worse than no credential: a token on a
+  # human's account makes every agent commit, PR and comment look like that
+  # human's own work, which is what the apps exist to prevent. That has already
+  # happened once, from a checkout whose .agents/ predated app support.
   AUTH_MODE="pat"
   TOKEN_FILE="$(lua_credential_file "$AGENTS_DIR/secrets/github_token" "GitHub token" \
     "GitHub > Settings > Developer settings > Fine-grained tokens: repository $GITHUB_REPO, Contents + Pull requests + Issues read/write, Actions read-only, named for the agent.")" || exit 1
+  echo "Warning: authenticating with a personal access token, not an app." >&2
+  echo "Work done now is attributed to the token's account, not to this agent." >&2
+else
+  cat >&2 <<EOF
+Error: no GitHub App configured for agent '$(lua_agent 2>/dev/null || echo unknown)'.
+
+App auth needs an id in .agents/apps.conf and a key at
+.agents/secrets/github_app_key.<agent>.pem. Check both, and check this checkout
+is current: a stale .agents/ with no apps.conf looks exactly like this.
+
+Refusing to fall back to a personal access token, which would attribute this
+agent's work to a human. Set LUA_ALLOW_PAT=1 for one command if that is
+genuinely wanted.
+EOF
+  exit 1
 fi
 
 # The bearer this agent authenticates with, whichever mode is in play.

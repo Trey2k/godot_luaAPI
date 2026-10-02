@@ -377,10 +377,19 @@ PR pass — rewrite the code the check is complaining about instead.
 `gh-agent.sh checks` reads the Actions API even though apps may hold `Checks: read`, because every
 check in this repo is an Actions job and the Actions path also works for an agent still on a token.
 
-**A personal access token remains as a fallback.** An agent with no app id or no key falls back to
-`.agents/secrets/github_token.<agent>`, and `whoami` prints which mode is in play. Prefer the app:
-a token on a human's account makes every agent commit look like that human's work, which is the
-problem the apps exist to solve.
+**Without an app, the wrappers refuse to run.** They do not quietly fall back to a personal access
+token. A token lives on a human's account, so falling back makes every commit, PR and issue comment
+look like that human's own work — the exact thing the apps exist to prevent, and it is not something
+to discover afterwards from the byline.
+
+This is not hypothetical. It happened from a checkout whose `.agents/` predated app support: there
+was no `apps.conf`, the fallback engaged silently, and an issue comment was published under Trey's
+name. The usual cause is a stale checkout, so the error says so and the first thing to try is
+`git pull --ff-only`.
+
+`LUA_ALLOW_PAT=1` re-enables the token path for one command, and prints a warning naming the account
+the work will be attributed to. Use it only when that attribution is genuinely wanted.
+`gh-agent.sh whoami` prints the active mode, and is worth running when something looks off.
 
 **Creating an app is Trey's job, not an agent's.** The private key is shown once, at creation. If a
 credential is missing, the wrapper prints what to create. Ask; do not work around it, and never read
