@@ -22,12 +22,18 @@ jobs:
         run: |
           rm -rf project/addons
           chmod +x godot.linuxbsd.editor.x86_64.luaAPI
-          timeout 300 ./godot.linuxbsd.editor.x86_64.luaAPI --headless --path project/
+          set -o pipefail
+          timeout 300 ./godot.linuxbsd.editor.x86_64.luaAPI --headless --path project/ 2>&1 | tee godot-output.txt
+      - name: Verify tests ran
+        if: ${{ always() }}
+        run: bash scripts/verify_test_log.sh project/log.txt godot-output.txt
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: module-test-results
-          path: project/log.txt
+          path: |
+            project/log.txt
+            godot-output.txt
 
   module-unit-tests-luajit:
     runs-on: "ubuntu-22.04"
@@ -45,10 +51,16 @@ jobs:
         run: |
           rm -rf project/addons
           chmod +x godot.linuxbsd.editor.x86_64.luaAPI
-          timeout 300 ./godot.linuxbsd.editor.x86_64.luaAPI --headless --path project/
+          set -o pipefail
+          timeout 300 ./godot.linuxbsd.editor.x86_64.luaAPI --headless --path project/ 2>&1 | tee godot-output.txt
           mv project/log.txt project/jit-log.txt
+      - name: Verify tests ran
+        if: ${{ always() }}
+        run: bash scripts/verify_test_log.sh project/jit-log.txt godot-output.txt
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: module-luajit-test-results
-          path: project/jit-log.txt
+          path: |
+            project/jit-log.txt
+            godot-output.txt
