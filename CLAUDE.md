@@ -15,7 +15,7 @@ Claude-Code-specific mechanics, which are the rest of what it is for:
   switches intensity; default here is **full**.
 - You authenticate as your own GitHub App, `trey-agent-claude[bot]`, whose private key is
   `.agents/secrets/github_app_key.claude.pem` and whose app id is in `.agents/apps.conf`. Commits and
-  PRs are authored by that bot, not by Trey. Never read or fall back to another agent's credential,
+  PRs are authored by that bot, not by a human. Never read or fall back to another agent's credential,
   and never use the SSH `origin` remote.
 - Work in `.agents/worktrees/claude/<task-slug>`, created by
   `.agents/bin/git-agent.sh worktree <task-slug>`. Never edit tracked files in the root checkout.

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Git operations that talk to GitHub with the agent's own token, never with
-# Trey's SSH key.
+# Git operations that talk to GitHub with the agent's own token, never with a
+# human's SSH key.
 #
-# The `origin` remote is git@github.com:Trey2k/godot_luaAPI.git and that SSH key
-# is Trey's. Agents never use it. Every agent operation that reaches GitHub --
+# The `origin` remote is SSH and its key belongs to a human. Agents never use it. Every agent operation that reaches GitHub --
 # fetch, pull, push -- goes over HTTPS authenticated with that agent's own
 # personal access token, supplied through an inline credential helper so the
 # secret never enters the remote URL, the process list, the reflog or a config
@@ -207,11 +206,11 @@ cmd_push() {
     case "$arg" in
       --force|-f|--force-with-lease|--force-with-lease=*|--force-if-includes)
         echo "Error: refusing to force-push. Rewriting a pushed branch loses review history." >&2
-        echo "If a rebase is genuinely wanted, Trey does it." >&2
+        echo "If a rebase is genuinely wanted, a human does it." >&2
         return 1
         ;;
       --delete|-d|--mirror|--prune)
-        echo "Error: refusing to delete remote refs. Branch cleanup is Trey's, after a merge." >&2
+        echo "Error: refusing to delete remote refs. Branch cleanup happens after a merge." >&2
         return 1
         ;;
     esac
