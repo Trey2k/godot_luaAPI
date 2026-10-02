@@ -170,7 +170,7 @@ Ask first, act after an answer. Each of these is visible outside this machine or
 Read-only API queries need no confirmation.
 
 **Agents never merge a pull request — not even their own, not even after CI goes green.** Opening the
-PR is where an agent's work ends. Merging is Trey's. See *What actually keeps an agent in its lane*
+PR is where an agent's work ends. Merging is the user's. See *What actually keeps an agent in its lane*
 in section 6 for why this is a written rule rather than something GitHub enforces.
 
 ---
@@ -200,9 +200,9 @@ report the blocker. After a PR merges, remove only a clean worktree with `git wo
 A worktree does not contain the ignored files from root. Build artifacts and `.agents/secrets/` stay
 in the main checkout; the wrappers already resolve credentials back to it.
 
-### Git talks to GitHub as the agent, never over Trey's SSH key
+### Git talks to GitHub as the agent, never over a human's SSH key
 
-`origin` is `git@github.com:Trey2k/godot_luaAPI.git` and that SSH key is Trey's. **Agents never use
+`origin` is `git@github.com:Trey2k/godot_luaAPI.git` and that SSH key belongs to a human. **Agents never use
 it.** Every agent operation that reaches GitHub goes over HTTPS with that agent's own token, through
 [`.agents/bin/git-agent.sh`](.agents/bin/git-agent.sh):
 
@@ -220,11 +220,11 @@ Manager answers first and blocks on a login prompt nobody is there to answer.
 **Never push to `main`, and never force-push, delete or rewrite any branch.** `git-agent.sh push`
 refuses all of those, plus any destination not named `<agent>/<task-slug>`. If push or PR creation
 fails, leave the work on the task branch and report the blocker. Do not fall back to the SSH remote,
-to Trey's credentials, or to plain `git push` to get around the wrapper.
+to a human's credentials, or to plain `git push` to get around the wrapper.
 
 **Commit identity is worktree-scoped, and it has to be.** A linked worktree shares `.git/config` with
 the main checkout, so `git config --local user.email` from inside a worktree rewrites the *root*
-checkout's identity and every later commit Trey makes there would carry it. `configure` turns on
+checkout's identity and every later commit made there by a human would carry it. `configure` turns on
 `extensions.worktreeConfig` and writes through `git config --worktree`, which lands in
 `.git/worktrees/<name>/config.worktree` and leaves root alone. It refuses to run in the main
 checkout. Never set an agent identity with `--local` or `--global`.
@@ -247,7 +247,7 @@ Push the branch, then open a PR targeting `main`:
 ```
 
 It fills base, head and reviewer from `.agents/repo.conf` and refuses to run from `main`. The PR is
-authored by the agent's bot user, so requesting Trey as reviewer works normally. If `pr-create` ever
+authored by the agent's bot user, so requesting the reviewer in `.agents/repo.conf` works normally. If `pr-create` ever
 warns that the reviewer was not requested, the agent is running on the fallback personal access token
 instead of its app — GitHub rejects a review request whose requester is the PR's own author. Check
 `gh-agent.sh whoami`; do not paper over it by assigning someone else.
@@ -383,15 +383,15 @@ look like that human's own work — the exact thing the apps exist to prevent, a
 to discover afterwards from the byline.
 
 This is not hypothetical. It happened from a checkout whose `.agents/` predated app support: there
-was no `apps.conf`, the fallback engaged silently, and an issue comment was published under Trey's
-name. The usual cause is a stale checkout, so the error says so and the first thing to try is
+was no `apps.conf`, the fallback engaged silently, and an issue comment was published under a
+human's name. The usual cause is a stale checkout, so the error says so and the first thing to try is
 `git pull --ff-only`.
 
 `LUA_ALLOW_PAT=1` re-enables the token path for one command, and prints a warning naming the account
 the work will be attributed to. Use it only when that attribution is genuinely wanted.
 `gh-agent.sh whoami` prints the active mode, and is worth running when something looks off.
 
-**Creating an app is Trey's job, not an agent's.** The private key is shown once, at creation. If a
+**Creating an app is the user's job, not an agent's.** The private key is shown once, at creation. If a
 credential is missing, the wrapper prints what to create. Ask; do not work around it, and never read
 or copy another agent's key.
 
@@ -416,12 +416,12 @@ Three layers, and they are not equally strong. Know which is which before trusti
 | Restrict deletions | `main` cannot be deleted |
 
 **One approval is what makes this enforcement rather than etiquette.** Each agent is a separate GitHub
-App, so its bot user is the PR author and Trey's approval counts — and GitHub forbids approving your
-own PR, so the agent cannot approve its own work. An agent therefore cannot land anything Trey has not
-reviewed, which is a server-side guarantee rather than a rule in this file.
+App, so its bot user is the PR author and a human's approval counts — and GitHub forbids approving
+your own PR, so the agent cannot approve its own work. An agent therefore cannot land anything a human
+has not reviewed, which is a server-side guarantee rather than a rule in this file.
 
-Bypass is **Repository admin**, so Trey keeps direct push to `main` while every app is bound by the
-rules. Status checks are deliberately **not** required: `runner.yml` skips doc-only changes via
+Bypass is **Repository admin**, so repository admins keep direct push to `main` while every app is
+bound by the rules. Status checks are deliberately **not** required: `runner.yml` skips doc-only changes via
 `paths-ignore`, so a required-check rule would leave a documentation PR permanently unmergeable. Read
 CI with `gh-agent.sh checks` and judge instead.
 
@@ -436,7 +436,7 @@ and mint its own token, so this layer stops accidents and nothing more. It is st
 working around it is a rule violation rather than a clever shortcut.
 
 **What is still trusted rather than enforced.** `Pull requests: write` is one permission for both
-opening and merging, so an agent could merge a PR that Trey has already approved, and the rule in
+opening and merging, so an agent could merge a PR that a human has already approved, and the rule in
 section 5 — agents never merge — is what prevents that. The approval requirement means it cannot merge
 anything *unreviewed*, which was the part worth closing. Outside `main` an agent can still create and
 delete other branches and tags; branch noise is visible and cheap to clean, and `main` is where damage
