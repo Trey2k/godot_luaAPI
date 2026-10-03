@@ -37,6 +37,7 @@ public:
 
 	void setObjectMetatable(Ref<LuaObjectMetatable> value);
 	Ref<LuaObjectMetatable> getObjectMetatable() const;
+	Ref<LuaObjectMetatable> getOrCreateObjectMetatable();
 
 	void setMemoryLimit(uint64_t limit);
 	uint64_t getMemoryLimit() const;

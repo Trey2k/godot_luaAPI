@@ -7,7 +7,6 @@
 #else
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/templates/vector.hpp>
-#include <godot_cpp/templates/vmap.hpp>
 #endif
 
 #include <classes/luaError.h>

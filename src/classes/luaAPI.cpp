@@ -7,13 +7,15 @@
 
 #ifdef LAPI_GDEXTENSION
 #include <godot_cpp/classes/file_access.hpp>
+#else
+#include "core/io/file_access.h"
 #endif
 
 LuaAPI::LuaAPI() {
 	lState = lua_newstate(&LuaAPI::luaAlloc, (void *)&luaAllocData);
-	Ref<LuaDefaultObjectMetatable> mt;
-	mt.instantiate();
-	objectMetatable = mt;
+	// The default metatable is deliberately not created here: it would become the
+	// object_metatable property's registered default, and ClassDB outlives the
+	// extension that defined the class, which segfaults the editor at shutdown.
 
 	// Creating lua state instance
 	state.setState(lState, this, true);
@@ -96,6 +98,18 @@ void LuaAPI::setObjectMetatable(Ref<LuaObjectMetatable> value) {
 }
 
 Ref<LuaObjectMetatable> LuaAPI::getObjectMetatable() const {
+	return objectMetatable;
+}
+
+// Not exposed to ClassDB: it builds default property values by reading them off a
+// fresh instance, so a bound getter that instantiates would register a live object
+// as the default. See the constructor.
+Ref<LuaObjectMetatable> LuaAPI::getOrCreateObjectMetatable() {
+	if (objectMetatable.is_null()) {
+		Ref<LuaDefaultObjectMetatable> mt;
+		mt.instantiate();
+		objectMetatable = mt;
+	}
 	return objectMetatable;
 }
 

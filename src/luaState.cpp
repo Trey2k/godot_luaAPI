@@ -464,8 +464,7 @@ Variant LuaState::getVariant(lua_State *state, int index) {
 	int type = lua_type(state, index);
 	switch (type) {
 		case LUA_TSTRING: {
-			String utf8_str;
-			utf8_str.parse_utf8(lua_tostring(state, index));
+			String utf8_str = String::utf8(lua_tostring(state, index));
 			result = utf8_str;
 			break;
 		}
@@ -552,8 +551,7 @@ Ref<LuaError> LuaState::handleError(lua_State *state, int lua_error) {
 	String msg;
 	switch (lua_error) {
 		case LUA_ERRRUN: {
-			String utf8_str;
-			utf8_str.parse_utf8(lua_tostring(state, -1));
+			String utf8_str = String::utf8(lua_tostring(state, -1));
 			msg += "[LUA_ERRRUN - runtime error ]\n";
 			msg += utf8_str;
 			msg += "\n";
@@ -561,8 +559,7 @@ Ref<LuaError> LuaState::handleError(lua_State *state, int lua_error) {
 			break;
 		}
 		case LUA_ERRSYNTAX: {
-			String utf8_str;
-			utf8_str.parse_utf8(lua_tostring(state, -1));
+			String utf8_str = String::utf8(lua_tostring(state, -1));
 			msg += "[LUA_ERRSYNTAX - syntax error ]\n";
 			msg += utf8_str;
 			msg += "\n";
@@ -712,7 +709,7 @@ int LuaState::luaPrint(lua_State *state) {
 				break;
 			}
 			default: {
-				it_string.parse_utf8(lua_tostring(state, n));
+				it_string = String::utf8(lua_tostring(state, n));
 				break;
 			}
 		}

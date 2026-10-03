@@ -412,7 +412,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -428,7 +428,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -446,7 +446,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -470,7 +470,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		// Sometimes the api ref is cleaned up first, so we need to check for that
 		if (!mt.is_valid() && api.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -492,7 +492,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -507,7 +507,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -522,7 +522,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -537,7 +537,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -552,7 +552,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -567,7 +567,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -582,7 +582,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -597,7 +597,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -612,7 +612,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -627,7 +627,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -642,7 +642,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -657,7 +657,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -672,7 +672,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -687,7 +687,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -702,7 +702,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -717,7 +717,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaAPI> api = getAPI(inner_state);
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -733,7 +733,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -749,7 +749,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -765,7 +765,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {
@@ -781,7 +781,7 @@ void LuaState::createObjectMetatable() {
 		Ref<LuaObjectMetatable> mt = arg1.get("lua_metatable");
 
 		if (!mt.is_valid()) {
-			mt = api->getObjectMetatable();
+			mt = api->getOrCreateObjectMetatable();
 		}
 
 		if (mt.is_valid()) {

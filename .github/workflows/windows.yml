@@ -6,7 +6,7 @@ on:
         description: "Weather or not to build all targets"
         required: true
         type: boolean
-      
+
       godot_version:
         description: "Version of godot to be used"
         required: true
@@ -44,63 +44,63 @@ jobs:
             cache-name: windows-template
             artifact-name: export-templates
             build-options: "target=template_release arch=x86_64"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: true # Verify Cross Compile on Check only runs
 
           - name: Windows Template Debug (target=template_debug,arch=x86_64)
             cache-name: windows-template-debug
             artifact-name: export-templates
             build-options: "target=template_debug arch=x86_64"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Windows Template (target=template_release,arch=x86_32)
             cache-name: windows-template
             artifact-name: export-templates
             build-options: "target=template_release arch=x86_32"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug (target=template_debug,arch=x86_32)
             cache-name: windows-template-debug
             artifact-name: export-templates
             build-options: "target=template_debug arch=x86_32"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Editor Mono (target=editor,module_mono_enabled=yes)
             cache-name: windows-editor-mono
             artifact-name: windows-editor-mono
             build-options: "target=editor module_mono_enabled=yes"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_64)
             cache-name: windows-template-mono
             artifact-name: export-templates-mono
             build-options: "target=template_release module_mono_enabled=yes arch=x86_64"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Windows Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_64)
             cache-name: windows-template-debug-mono
             artifact-name: export-templates-mono
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_64"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_32)
             cache-name: windows-template-mono
             artifact-name: export-templates-mono
             build-options: "target=template_release module_mono_enabled=yes arch=x86_32"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Windows Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_32)
             cache-name: windows-template-debug-mono
             artifact-name: export-templates-mono
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_32"
-            runner: "ubuntu-20.04"
+            runner: "ubuntu-22.04"
             should-run: ${{ inputs.fullbuild }}
 
         exclude:
@@ -111,10 +111,8 @@ jobs:
         with:
           submodules: recursive
 
-      # Editing this is pretty dangerous for Windows since it can break.
-      # Needs to be properly tested with a fresh cache.
       - name: Load .scons_cache directory
-        uses: RevoluPowered/cache@v2.1
+        uses: actions/cache@v4
         with:
           path: /.scons_cache/
           key: ${{matrix.opts.cache-name}}-${{env.BASE_BRANCH}}-${{github.ref}}-${{github.sha}}
@@ -140,7 +138,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
-      
+
       - name: Install Wine (Mono)
         if: matrix.opts.artifact-name == 'windows-editor-mono'
         shell: bash
@@ -149,7 +147,7 @@ jobs:
           sudo apt install wine
 
           wine --version
-          
+
 
       - name: Set up Python 3.x
         uses: actions/setup-python@v2
@@ -164,7 +162,7 @@ jobs:
           python -m pip install scons pywin32
           python --version
           scons --version
-        
+
       - name: Configuring Python packages (Linux)
         if: matrix.opts.runner != 'windows-latest'
         run: |
@@ -172,20 +170,20 @@ jobs:
           python -m pip install scons
           python --version
           scons --version
-      
+
       - name: Compilation
         working-directory: ./scripts
         env:
           SCONS_CACHE: ${{github.workspace}}/.scons_cache/
         run: |
           scons platform=windows ${{ matrix.opts.build-options }} ${{ env.SCONSFLAGS }}
-        
+
       - name: Prepare artifact (Windows)
         if: matrix.opts.runner == 'windows-latest'
         shell: bash
         run: |
           rm -rf scripts/godot/bin/{*.exp,*.lib,*.pdb}
-      
+
       - name: Prepare artifact (Linux)
         if: matrix.opts.runner != 'windows-latest'
         shell: bash
@@ -213,7 +211,7 @@ jobs:
           mv scripts/godot/bin/godot.windows.template_debug.x86_64.luaAPI.exe scripts/godot/templates/windows_debug_x86_64.exe || true
           mv scripts/godot/bin/godot.windows.template_release.x86_32.luaAPI.exe scripts/godot/templates/windows_release_x86_32.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_32.luaAPI.exe scripts/godot/templates/windows_debug_x86_32.exe || true
-          
+
           mv scripts/godot/bin/godot.windows.template_release.x86_64.luaAPI.console.exe scripts/godot/templates/windows_release_x86_64_console.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_64.luaAPI.console.exe scripts/godot/templates/windows_debug_x86_64_console.exe || true
           mv scripts/godot/bin/godot.windows.template_release.x86_32.luaAPI.console.exe scripts/godot/templates/windows_release_x86_32_console.exe || true
@@ -223,13 +221,13 @@ jobs:
           mv scripts/godot/bin/godot.windows.template_debug.x86_64.luaAPI.mono.exe scripts/godot/templates/windows_debug_x86_64.exe || true
           mv scripts/godot/bin/godot.windows.template_release.x86_32.luaAPI.mono.exe scripts/godot/templates/windows_release_x86_32.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_32.luaAPI.mono.exe scripts/godot/templates/windows_debug_x86_32.exe || true
-          
+
           mv scripts/godot/bin/godot.windows.template_release.x86_64.luaAPI.mono.console.exe scripts/godot/templates/windows_release_x86_64_console.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_64.luaAPI.mono.console.exe scripts/godot/templates/windows_debug_x86_64_console.exe || true
           mv scripts/godot/bin/godot.windows.template_release.x86_32.luaAPI.mono.console.exe scripts/godot/templates/windows_release_x86_32_console.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_32.luaAPI.mono.console.exe scripts/godot/templates/windows_debug_x86_32_console.exe || true
 
-          
+
           rm -rf scripts/godot/bin/*
           mv scripts/godot/templates scripts/godot/bin/
 
@@ -238,8 +236,8 @@ jobs:
         shell: bash
         run: |
           cp -n README.md LICENSE scripts/godot/bin/
-      
-      - uses: actions/upload-artifact@v2
+
+      - uses: actions/upload-artifact@v4
         with:
-          name: ${{matrix.opts.artifact-name}}
+          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.artifact-name }}
           path: scripts/godot/bin/*

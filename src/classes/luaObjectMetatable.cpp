@@ -1,7 +1,6 @@
 #include "luaObjectMetatable.h"
 
 #ifdef LAPI_GDEXTENSION
-#define GDVIRTUAL_BIND(m, ...) BIND_VIRTUAL_METHOD(LuaObjectMetatable, m);
 #define VIRTUAL_CALL(m, r, ...) r = call(#m, __VA_ARGS__);
 #else
 #define VIRTUAL_CALL(m, r, ...) GDVIRTUAL_CALL(m, __VA_ARGS__, r);
