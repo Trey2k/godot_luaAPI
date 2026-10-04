@@ -44,63 +44,63 @@ jobs:
             cache-name: windows-template
             artifact-name: export-templates
             build-options: "target=template_release arch=x86_64"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: true # Verify Cross Compile on Check only runs
 
           - name: Windows Template Debug (target=template_debug,arch=x86_64)
             cache-name: windows-template-debug
             artifact-name: export-templates
             build-options: "target=template_debug arch=x86_64"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template (target=template_release,arch=x86_32)
             cache-name: windows-template
             artifact-name: export-templates
             build-options: "target=template_release arch=x86_32"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug (target=template_debug,arch=x86_32)
             cache-name: windows-template-debug
             artifact-name: export-templates
             build-options: "target=template_debug arch=x86_32"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Editor Mono (target=editor,module_mono_enabled=yes)
             cache-name: windows-editor-mono
             artifact-name: windows-editor-mono
             build-options: "target=editor module_mono_enabled=yes"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_64)
             cache-name: windows-template-mono
             artifact-name: export-templates-mono
             build-options: "target=template_release module_mono_enabled=yes arch=x86_64"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_64)
             cache-name: windows-template-debug-mono
             artifact-name: export-templates-mono
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_64"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_32)
             cache-name: windows-template-mono
             artifact-name: export-templates-mono
             build-options: "target=template_release module_mono_enabled=yes arch=x86_32"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_32)
             cache-name: windows-template-debug-mono
             artifact-name: export-templates-mono
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_32"
-            runner: "ubuntu-22.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
         exclude:
@@ -121,33 +121,11 @@ jobs:
             ${{matrix.opts.cache-name}}-${{env.BASE_BRANCH}}-${{github.ref}}
             ${{matrix.opts.cache-name}}-${{env.BASE_BRANCH}}
 
-      - name: Install mingw64 (Linux)
-        if: ${{ matrix.opts.runner != 'windows-latest' }}
-        shell: sh
-        run: |
-          sudo apt update
-          sudo apt install gcc-multilib g++-multilib
-          sudo apt-get install mingw-w64
-          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
-          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
-          sudo update-alternatives --set i686-w64-mingw32-gcc /usr/bin/i686-w64-mingw32-gcc-posix
-          sudo update-alternatives --set i686-w64-mingw32-g++ /usr/bin/i686-w64-mingw32-g++-posix
-
       - name: Install .NET SDK 6.0 (Mono)
         if: ${{ contains(matrix.opts.build-options, 'module_mono_enabled=yes') }}
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
-
-      - name: Install Wine (Mono)
-        if: matrix.opts.artifact-name == 'windows-editor-mono'
-        shell: bash
-        run: |
-          sudo apt update
-          sudo apt install wine
-
-          wine --version
-
 
       - name: Set up Python 3.x
         uses: actions/setup-python@v2
@@ -155,19 +133,10 @@ jobs:
           python-version: "3.x"
           architecture: "x64"
 
-      - name: Configuring Python packages (Windows)
-        if: matrix.opts.runner == 'windows-latest'
+      - name: Configuring Python packages
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install scons pywin32
-          python --version
-          scons --version
-
-      - name: Configuring Python packages (Linux)
-        if: matrix.opts.runner != 'windows-latest'
-        run: |
-          python -c "import sys; print(sys.version)"
-          python -m pip install scons
           python --version
           scons --version
 
@@ -218,27 +187,19 @@ jobs:
         env:
           SCONS_CACHE: ${{github.workspace}}/.scons_cache/
         run: |
-          scons platform=windows ${{ matrix.opts.build-options }} ${{ env.SCONSFLAGS }}             d3d12=${{ steps.d3d12-sdk.outputs.D3D12_ENABLED }}             angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }}             accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }}
+          scons platform=windows ${{ matrix.opts.build-options }} ${{ env.SCONSFLAGS }} d3d12=${{ steps.d3d12-sdk.outputs.D3D12_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }}
 
-      - name: Prepare artifact (Windows)
-        if: matrix.opts.runner == 'windows-latest'
+      - name: Prepare artifact
         shell: bash
         run: |
           rm -rf scripts/godot/bin/{*.exp,*.lib,*.pdb}
-
-      - name: Prepare artifact (Linux)
-        if: matrix.opts.runner != 'windows-latest'
-        shell: bash
-        run: |
-          rm -rf scripts/godot/bin/{*.exp,*.lib,*.pdb}
-          strip scripts/godot/bin/*.exe
 
       - name: Generate Mono Glue
         if: matrix.opts.artifact-name == 'windows-editor-mono'
         shell: bash
         run: |
           cd scripts/godot
-          wine bin/godot.windows.editor.x86_64.luaAPI.mono.exe --headless --generate-mono-glue modules/mono/glue
+          ./bin/godot.windows.editor.x86_64.luaAPI.mono.exe --headless --generate-mono-glue modules/mono/glue
           mkdir bin/nuget_packages
           ./modules/mono/build_scripts/build_assemblies.py --godot-output-dir=./bin --push-nupkgs-local ./bin/nuget_packages
           cp ../mono_instructions.txt bin/
