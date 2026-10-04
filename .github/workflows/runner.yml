@@ -49,6 +49,7 @@ jobs:
 
   macos-package:
     name: 🍎 macOS Package
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: macos-build
     uses: ./.github/workflows/macos-package.yml
     with:

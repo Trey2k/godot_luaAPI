@@ -45,7 +45,7 @@ jobs:
             artifact-name: export-templates
             build-options: "target=template_release arch=x86_64"
             runner: "windows-latest"
-            should-run: true # Verify Cross Compile on Check only runs
+            should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug (target=template_debug,arch=x86_64)
             cache-name: windows-template-debug

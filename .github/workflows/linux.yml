@@ -67,7 +67,7 @@ jobs:
             cache-name: linux-editor-mono
             artifact-name: linux-editor-mono
             build-options: "target=editor module_mono_enabled=yes arch=x86_64"
-            should-run: true # Verify mono builds
+            should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_64)
             cache-name: linux-template-mono

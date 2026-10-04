@@ -31,7 +31,7 @@ jobs:
             cache-name: macos-editor-x86
             artifact-name: macos-editor-bins
             build-options: "target=editor arch=x86_64"
-            should-run: true
+            should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Editor (target=editor,arch=arm64)
             cache-name: macos-editor-arm64
