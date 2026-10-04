@@ -34,7 +34,12 @@ jobs:
         run: |
           rm -rf project/addons && mv project/container/addons project/addons
           set -o pipefail
-          timeout 300 ./godot --headless --path project/ --editor --quit 2>&1 | tee godot-import.txt
+          # Any godot-cpp 10 extension that registers a class segfaults Godot
+          # 4.7.2's headless editor at shutdown, godot-cpp's own test project
+          # included, so the import pass cannot be trusted to exit cleanly. The
+          # assets still import; the test run below is the real gate, and
+          # verify_test_log.sh fails the job if the extension did not load.
+          timeout 300 ./godot --headless --path project/ --import 2>&1 | tee godot-import.txt || true
           timeout 300 ./godot --headless --path project/ 2>&1 | tee godot-output.txt
           mv project/log.txt project/extension-log.txt
       - name: Verify tests ran
@@ -71,7 +76,12 @@ jobs:
         run: |
           rm -rf project/addons && mv project/container/addons project/addons
           set -o pipefail
-          timeout 300 ./godot --headless --path project/ --editor --quit 2>&1 | tee godot-import.txt
+          # Any godot-cpp 10 extension that registers a class segfaults Godot
+          # 4.7.2's headless editor at shutdown, godot-cpp's own test project
+          # included, so the import pass cannot be trusted to exit cleanly. The
+          # assets still import; the test run below is the real gate, and
+          # verify_test_log.sh fails the job if the extension did not load.
+          timeout 300 ./godot --headless --path project/ --import 2>&1 | tee godot-import.txt || true
           timeout 300 ./godot --headless --path project/ 2>&1 | tee godot-output.txt
           mv project/log.txt project/extension-log.txt
       - name: Verify tests ran

@@ -14,7 +14,7 @@ on:
 
 env:
   BASE_BRANCH: main
-  SCONSFLAGS: "production=yes extra_suffix=luaAPI"
+  SCONSFLAGS: "production=yes extra_suffix=luaAPI d3d12=yes angle=yes accesskit=yes"
   SCONS_CACHE_LIMIT: 7168
   GODOT_VERSION: ${{ inputs.godot_version }}-stable
 
@@ -170,6 +170,27 @@ jobs:
           python -m pip install scons
           python --version
           scons --version
+
+      - name: Clone Godot
+        working-directory: ./scripts
+        shell: bash
+        run: |
+          git clone --depth 1 --branch ${{ env.GODOT_VERSION }}             https://github.com/godotengine/godot godot
+
+      - name: Download Direct3D 12 SDK
+        working-directory: ./scripts/godot
+        shell: bash
+        run: python misc/scripts/install_d3d12_sdk_windows.py
+
+      - name: Download ANGLE
+        working-directory: ./scripts/godot
+        shell: bash
+        run: python misc/scripts/install_angle.py
+
+      - name: Download AccessKit
+        working-directory: ./scripts/godot
+        shell: bash
+        run: python misc/scripts/install_accesskit.py
 
       - name: Compilation
         working-directory: ./scripts

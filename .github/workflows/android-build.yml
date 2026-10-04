@@ -15,7 +15,7 @@ on:
 
 env:
   BASE_BRANCH: main
-  SCONSFLAGS: "production=yes extra_suffix=luaAPI"
+  SCONSFLAGS: "production=yes extra_suffix=luaAPI swappy=yes"
   SCONS_CACHE_LIMIT: 7168
   GODOT_VERSION: ${{ inputs.godot_version }}-stable
 
@@ -111,6 +111,17 @@ jobs:
           python -m pip install scons
           python --version
           scons --version
+
+      - name: Clone Godot
+        working-directory: ./scripts
+        shell: bash
+        run: |
+          git clone --depth 1 --branch ${{ env.GODOT_VERSION }}             https://github.com/godotengine/godot godot
+
+      - name: Download Swappy
+        working-directory: ./scripts/godot
+        shell: bash
+        run: python misc/scripts/install_swappy_android.py
 
       - name: Compilation
         working-directory: ./scripts
