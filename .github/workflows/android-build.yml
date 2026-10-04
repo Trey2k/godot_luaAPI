@@ -115,8 +115,7 @@ jobs:
       - name: Clone Godot
         working-directory: ./scripts
         shell: bash
-        run: |
-          git clone --depth 1 --branch ${{ env.GODOT_VERSION }}             https://github.com/godotengine/godot godot
+        run: git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot godot
 
       - name: Download Swappy
         working-directory: ./scripts/godot
