@@ -25,7 +25,7 @@
 			<return type="LuaError" />
 			<param index="0" name="Array" type="Array" />
 			<description>
-				Bind lua libraries to the LuaAPI Object. 
+				Bind lua libraries to the LuaAPI Object.
 				Returns an error if a library fails to bind.
 				Note: in C#, the param Array must be a [code]Godot.Collections.Array[/code] and not a [code]System.Array[/code] class.
 			</description>
@@ -76,7 +76,7 @@
 			<param index="1" name="var" type="Variant" />
 			<description>
 				Will push a copy of a Variant to lua as a global. Returns a error if the type is not supported.
-				Using [code].PushVariant[/code] in C# to push a function requires wrapping the Method in a [code]Callable[/code] first. In GDScript the wrapper is not needed. 
+				Using [code].PushVariant[/code] in C# to push a function requires wrapping the Method in a [code]Callable[/code] first. In GDScript the wrapper is not needed.
 			</description>
 		</method>
 		<method name="get_registry_value">
@@ -119,8 +119,9 @@
 		</method>
 	</methods>
 	<members>
-		<member name="object_metatable" type="LuaObjectMetatable" setter="set_object_metatable" getter="get_object_metatable" default="LuaDefaultObjectMetatable">
-			This is the default LuaMetatable to use for object which do not define a lua_metatable field. By default it is a LuaDefaultObjectMetatable. You can change this to a custom metatable to change the behavior of all objects.
+		<member name="object_metatable" type="LuaObjectMetatable" setter="set_object_metatable" getter="get_object_metatable">
+			The metatable used for objects which do not define a lua_metatable field. Set this to a custom metatable to change the behavior of all objects.
+			Reading this before setting it returns [code]null[/code]: a [LuaDefaultObjectMetatable] is created internally the first time an object is pushed, rather than in the constructor. An instantiated object cannot be a property default, because the engine keeps class defaults past the lifetime of the extension that registered the class.
 		</member>
 		<member name="memory_limit" type="int" setter="set_memory_limit" getter="get_memory_limit" default="0">
 			Sets the memory limit for the state in bytes. If the limit is 0, there is no limit.

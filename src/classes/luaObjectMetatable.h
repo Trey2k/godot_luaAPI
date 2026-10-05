@@ -6,6 +6,8 @@
 #include "core/object/ref_counted.h"
 #else
 #include <godot_cpp/classes/ref.hpp>
+// godot-cpp expects consumers to include this directly for the GDVIRTUAL macros.
+#include <godot_cpp/core/gdvirtual.gen.inc>
 #endif
 
 #include "luaAPI.h"
@@ -22,7 +24,7 @@ class LuaObjectMetatable : public RefCounted {
 protected:
 	static void _bind_methods();
 
-#ifndef LAPI_GDEXTENSION
+	// GDVIRTUAL_BIND needs the method info these declare, in both builds.
 	GDVIRTUAL3R(Variant, __index, Object *, Ref<LuaAPI>, Variant);
 	GDVIRTUAL4R(Ref<LuaError>, __newindex, Object *, Ref<LuaAPI>, Variant, Variant);
 	GDVIRTUAL3R(Variant, __call, Object *, Ref<LuaAPI>, Ref<LuaTuple>);
@@ -47,7 +49,6 @@ protected:
 	GDVIRTUAL3R(bool, __eq, Object *, Ref<LuaAPI>, Variant);
 	GDVIRTUAL3R(bool, __lt, Object *, Ref<LuaAPI>, Variant);
 	GDVIRTUAL3R(bool, __le, Object *, Ref<LuaAPI>, Variant);
-#endif
 
 public:
 	virtual Variant __index(Object *obj, Ref<LuaAPI> api, Variant index);

@@ -26,7 +26,9 @@ elif luaver == "5.1":
         env_lua.Append(CPPDEFINES=['LUA_USE_IOS'])
 
     if not env_lua.msvc:
-        env_lua['CFLAGS'].remove('-std=gnu11')
+        # Lua needs C99, and the engine's own standard moves between versions:
+        # 4.2 set -std=gnu11, 4.7 sets -std=gnu17.
+        env_lua['CFLAGS'] = [f for f in env_lua['CFLAGS'] if not f.startswith('-std=')]
         env_lua.Append(CFLAGS=['-std=c99'])
 
     env_lua.Append(CPPPATH=[Dir('lua51').abspath])
@@ -41,9 +43,10 @@ else:
         env_lua.Append(CPPDEFINES=['LUA_USE_IOS'])
 
     if not env_lua.msvc:
-        env_lua['CFLAGS'].remove('-std=gnu11')
+        # Lua needs C99, and the engine's own standard moves between versions:
+        # 4.2 set -std=gnu11, 4.7 sets -std=gnu17.
+        env_lua['CFLAGS'] = [f for f in env_lua['CFLAGS'] if not f.startswith('-std=')]
         env_lua.Append(CFLAGS=['-std=c99'])
 
     env_lua.Append(CPPPATH=[Dir('lua').abspath])
     env_lua.add_source_files(env.modules_sources, 'lua/onelua.c')
-

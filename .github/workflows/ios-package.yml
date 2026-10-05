@@ -4,7 +4,7 @@ on:
 
 jobs:
   ios-package:
-    runs-on: "macos-latest"
+    runs-on: "macos-26"
     name: ${{ matrix.opts.name }}
     strategy:
       fail-fast: false
@@ -23,22 +23,24 @@ jobs:
           repository: godotengine/godot
           ref: master
           path: scripts/godot
-      
+
       - name: Setup Vulkan SDK
         run: |
           sh scripts/install_vulkan_sdk_macos.sh
 
       - name: Download Artifact
         id: download-artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.opts.artifact-name }}
+          pattern: "*--${{ matrix.opts.artifact-name }}"
+          merge-multiple: true
           path: scripts/godot/bin
 
       - name: Delete Artifact
-        uses: geekyeggo/delete-artifact@v2
+        uses: geekyeggo/delete-artifact@v5
         with:
-          name: ${{ matrix.opts.artifact-name }}
+          name: "*--${{ matrix.opts.artifact-name }}"
+          useGlob: true
 
       - name: Make universal binaries and bundle (template)
         working-directory: ./scripts/godot/bin
@@ -50,7 +52,7 @@ jobs:
           mv libgodot.ios.template_debug.arm64.luaAPI.a ios_xcode/libgodot.ios.debug.xcframework/ios-arm64/libgodot.a
           lipo -create libgodot.ios.template_debug.arm64.simulator.luaAPI.a libgodot.ios.template_debug.x86_64.simulator.luaAPI.a -output ios_xcode/libgodot.ios.debug.xcframework/ios-arm64_x86_64-simulator/libgodot.a
           rm -rf libgodot.ios.template_debug.arm64.simulator.luaAPI.a libgodot.ios.template_debug.x86_64.simulator.luaAPI.a
-        
+
           mv libgodot.ios.template_release.arm64.luaAPI.a ios_xcode/libgodot.ios.release.xcframework/ios-arm64/libgodot.a
 
           lipo -create libgodot.ios.template_release.arm64.simulator.luaAPI.a libgodot.ios.template_release.x86_64.simulator.luaAPI.a -output ios_xcode/libgodot.ios.release.xcframework/ios-arm64_x86_64-simulator/libgodot.a
@@ -63,8 +65,8 @@ jobs:
           zip -q -9 -r ../templates/ios.zip *
           cd ..
           rm -rf ios_xcode
-      
-      - uses: actions/upload-artifact@v2
+
+      - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.opts.final-artifact-name }}
+          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.final-artifact-name }}
           path: scripts/godot/bin/*

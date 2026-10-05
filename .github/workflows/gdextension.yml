@@ -60,28 +60,28 @@ jobs:
             target: template_debug
             platform: windows
             arch: x86_64
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: windows-release (x86_64)
             name: Windows (x86_64) - template_release
             runner: ubuntu-22.04
             target: template_release
             platform: windows
             arch: x86_64
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: windows-debug (x86_32)
             name: Windows (x86_32) - template_debug
             runner: ubuntu-22.04
             target: template_debug
             platform: windows
             arch: x86_32
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: windows-release (x86_32)
             name: Windows (x86_32) - template_release
             runner: ubuntu-22.04
             target: template_release
             platform: windows
             arch: x86_32
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
 
           # - identifier: android-release (x86_64)
           #   name: Android (x86_64) - template_release
@@ -114,49 +114,49 @@ jobs:
 
           - identifier: macos-release (universal)
             name: MacOS (universal) - template_release
-            runner: macos-latest
+            runner: macos-26
             target: template_release
             platform: macos
             arch: universal
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: macos-debug (universal)
             name: MacOS (universal) - template_debug
-            runner: macos-latest
+            runner: macos-26
             target: template_debug
             platform: macos
             arch: universal
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
 
           - identifier: ios-release (arm64)
             name: IOS (arm64) - template_release
-            runner: macos-latest
+            runner: macos-26
             target: template_release
             platform: ios
             arch: arm64
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: ios-debug (arm64)
             name: IOS (arm64) - template_debug
-            runner: macos-latest
+            runner: macos-26
             target: template_debug
             platform: ios
             arch: arm64
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: ios-simulator-release (universal)
             name: IOS Simulator (universal) - template_release
-            runner: macos-latest
+            runner: macos-26
             args: ios_simulator=yes
             target: template_release
             platform: ios
             arch: universal
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: ios-simulator-debug (universal)
             name: IOS Simulator (universal) - template_debug
-            runner: macos-latest
+            runner: macos-26
             args: ios_simulator=yes
             target: template_debug
             platform: ios
             arch: universal
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
         exclude:
           - {opts: {should-build: false}}
 
@@ -196,7 +196,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install yasm
           cd /opt
-          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2020.11.x-2/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2026.05.x-1/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           tar xf x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           rm -f x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           mv x86_64-godot-linux-gnu_sdk-buildroot buildroot
@@ -210,7 +210,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install yasm
           cd /opt
-          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2020.11.x-2/i686-godot-linux-gnu_sdk-buildroot.tar.bz2
+          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2026.05.x-1/i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           tar xf i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           rm -f i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           mv i686-godot-linux-gnu_sdk-buildroot buildroot
@@ -306,43 +306,43 @@ jobs:
             target: template_debug
             platform: windows
             arch: x86_64
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: windows-release (x86_64, luaJIT)
             name: Windows (x86_64, luaJIT) - template_release
             runner: ubuntu-22.04
             target: template_release
             platform: windows
             arch: x86_64
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: windows-debug (x86_32, luaJIT)
             name: Windows (x86_32, luaJIT) - template_debug
             runner: ubuntu-22.04
             target: template_debug
             platform: windows
             arch: x86_32
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: windows-release (x86_32, luaJIT)
             name: Windows (x86_32, luaJIT) - template_release
             runner: ubuntu-22.04
             target: template_release
             platform: windows
             arch: x86_32
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
 
           - identifier: macos-release (universal, luaJIT)
             name: MacOS (universal, luaJIT) - template_release
-            runner: macos-latest
+            runner: macos-26
             target: template_release
             platform: macos
             arch: universal
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
           - identifier: macos-debug (universal, luaJIT)
             name: MacOS (universal, luaJIT) - template_debug
-            runner: macos-latest
+            runner: macos-26
             target: template_debug
             platform: macos
             arch: universal
-            should-build: false # non-Linux disabled, see issue #4
+            should-build: ${{ inputs.fullbuild }}
         exclude:
           - {opts: {should-build: false}}
 
@@ -375,7 +375,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install yasm
           cd /opt
-          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2020.11.x-2/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2026.05.x-1/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           tar xf x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           rm -f x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           mv x86_64-godot-linux-gnu_sdk-buildroot buildroot
@@ -389,7 +389,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install yasm
           cd /opt
-          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2020.11.x-2/i686-godot-linux-gnu_sdk-buildroot.tar.bz2
+          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2026.05.x-1/i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           tar xf i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           rm -f i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           mv i686-godot-linux-gnu_sdk-buildroot buildroot

@@ -41,25 +41,25 @@ jobs:
 
           - name: Linux Template (target=template_release,arch=x86_64)
             cache-name: linux-template
-            artifact-name: export-templates-linux-release-x86_64
+            artifact-name: export-templates
             build-options: "target=template_release arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Debug (target=template_debug,arch=x86_64)
             cache-name: linux-template-debug
-            artifact-name: export-templates-linux-debug-x86_64
+            artifact-name: export-templates
             build-options: "target=template_debug arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template (target=template_release,arch=x86_32)
             cache-name: linux-template
-            artifact-name: export-templates-linux-release-x86_32
+            artifact-name: export-templates
             build-options: "target=template_release arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Debug (target=template_debug,arch=x86_32)
             cache-name: linux-template-debug
-            artifact-name: export-templates-linux-debug-x86_32
+            artifact-name: export-templates
             build-options: "target=template_debug arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
 
@@ -67,29 +67,29 @@ jobs:
             cache-name: linux-editor-mono
             artifact-name: linux-editor-mono
             build-options: "target=editor module_mono_enabled=yes arch=x86_64"
-            should-run: true # Verify mono builds
+            should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_64)
             cache-name: linux-template-mono
-            artifact-name: export-templates-mono-linux-release-x86_64
+            artifact-name: export-templates-mono
             build-options: "target=template_release module_mono_enabled=yes arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_64)
             cache-name: linux-template-debug-mono
-            artifact-name: export-templates-mono-linux-debug-x86_64
+            artifact-name: export-templates-mono
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_32)
             cache-name: linux-template-mono
-            artifact-name: export-templates-mono-linux-release-x86_32
+            artifact-name: export-templates-mono
             build-options: "target=template_release module_mono_enabled=yes arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_32)
             cache-name: linux-template-debug-mono
-            artifact-name: export-templates-mono-linux-debug-x86_32
+            artifact-name: export-templates-mono
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
 
@@ -108,7 +108,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install yasm
           cd /opt
-          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2020.11.x-2/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
+          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2026.05.x-1/x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           tar xf x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           rm -f x86_64-godot-linux-gnu_sdk-buildroot.tar.bz2
           mv x86_64-godot-linux-gnu_sdk-buildroot buildroot
@@ -122,7 +122,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install yasm
           cd /opt
-          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2020.11.x-2/i686-godot-linux-gnu_sdk-buildroot.tar.bz2
+          curl -LO https://github.com/godotengine/buildroot/releases/download/godot-2026.05.x-1/i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           tar xf i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           rm -f i686-godot-linux-gnu_sdk-buildroot.tar.bz2
           mv i686-godot-linux-gnu_sdk-buildroot buildroot
@@ -204,5 +204,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{matrix.opts.artifact-name}}
+          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.artifact-name }}
           path: scripts/godot/bin/*

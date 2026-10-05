@@ -6,7 +6,7 @@ on:
         description: "Weather or not to build all targets"
         required: true
         type: boolean
-      
+
       godot_version:
         description: "Version of godot to be used"
         required: true
@@ -44,63 +44,63 @@ jobs:
             cache-name: windows-template
             artifact-name: export-templates
             build-options: "target=template_release arch=x86_64"
-            runner: "ubuntu-20.04"
-            should-run: true # Verify Cross Compile on Check only runs
+            runner: "windows-latest"
+            should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug (target=template_debug,arch=x86_64)
             cache-name: windows-template-debug
             artifact-name: export-templates
             build-options: "target=template_debug arch=x86_64"
-            runner: "ubuntu-20.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Windows Template (target=template_release,arch=x86_32)
             cache-name: windows-template
             artifact-name: export-templates
             build-options: "target=template_release arch=x86_32"
-            runner: "ubuntu-20.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug (target=template_debug,arch=x86_32)
             cache-name: windows-template-debug
             artifact-name: export-templates
             build-options: "target=template_debug arch=x86_32"
-            runner: "ubuntu-20.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Editor Mono (target=editor,module_mono_enabled=yes)
             cache-name: windows-editor-mono
             artifact-name: windows-editor-mono
             build-options: "target=editor module_mono_enabled=yes"
-            runner: "ubuntu-20.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_64)
             cache-name: windows-template-mono
             artifact-name: export-templates-mono
             build-options: "target=template_release module_mono_enabled=yes arch=x86_64"
-            runner: "ubuntu-20.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Windows Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_64)
             cache-name: windows-template-debug-mono
             artifact-name: export-templates-mono
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_64"
-            runner: "ubuntu-20.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_32)
             cache-name: windows-template-mono
             artifact-name: export-templates-mono
             build-options: "target=template_release module_mono_enabled=yes arch=x86_32"
-            runner: "ubuntu-20.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Windows Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_32)
             cache-name: windows-template-debug-mono
             artifact-name: export-templates-mono
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_32"
-            runner: "ubuntu-20.04"
+            runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
         exclude:
@@ -111,10 +111,8 @@ jobs:
         with:
           submodules: recursive
 
-      # Editing this is pretty dangerous for Windows since it can break.
-      # Needs to be properly tested with a fresh cache.
       - name: Load .scons_cache directory
-        uses: RevoluPowered/cache@v2.1
+        uses: actions/cache@v4
         with:
           path: /.scons_cache/
           key: ${{matrix.opts.cache-name}}-${{env.BASE_BRANCH}}-${{github.ref}}-${{github.sha}}
@@ -123,33 +121,11 @@ jobs:
             ${{matrix.opts.cache-name}}-${{env.BASE_BRANCH}}-${{github.ref}}
             ${{matrix.opts.cache-name}}-${{env.BASE_BRANCH}}
 
-      - name: Install mingw64 (Linux)
-        if: ${{ matrix.opts.runner != 'windows-latest' }}
-        shell: sh
-        run: |
-          sudo apt update
-          sudo apt install gcc-multilib g++-multilib
-          sudo apt-get install mingw-w64
-          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
-          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
-          sudo update-alternatives --set i686-w64-mingw32-gcc /usr/bin/i686-w64-mingw32-gcc-posix
-          sudo update-alternatives --set i686-w64-mingw32-g++ /usr/bin/i686-w64-mingw32-g++-posix
-
       - name: Install .NET SDK 6.0 (Mono)
         if: ${{ contains(matrix.opts.build-options, 'module_mono_enabled=yes') }}
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
-      
-      - name: Install Wine (Mono)
-        if: matrix.opts.artifact-name == 'windows-editor-mono'
-        shell: bash
-        run: |
-          sudo apt update
-          sudo apt install wine
-
-          wine --version
-          
 
       - name: Set up Python 3.x
         uses: actions/setup-python@v2
@@ -157,48 +133,73 @@ jobs:
           python-version: "3.x"
           architecture: "x64"
 
-      - name: Configuring Python packages (Windows)
-        if: matrix.opts.runner == 'windows-latest'
+      - name: Configuring Python packages
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install scons pywin32
           python --version
           scons --version
-        
-      - name: Configuring Python packages (Linux)
-        if: matrix.opts.runner != 'windows-latest'
+
+      - name: Clone Godot
+        working-directory: ./scripts
+        shell: sh
+        run: git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot godot
+
+      - name: Download Direct3D 12 SDK
+        working-directory: ./scripts/godot
+        shell: sh
+        id: d3d12-sdk
         run: |
-          python -c "import sys; print(sys.version)"
-          python -m pip install scons
-          python --version
-          scons --version
-      
+          if python ./misc/scripts/install_d3d12_sdk_windows.py; then
+            echo "D3D12_ENABLED=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Direct3D 12 SDK installation failed, building without D3D12 support."
+            echo "D3D12_ENABLED=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download ANGLE
+        working-directory: ./scripts/godot
+        shell: sh
+        id: angle-sdk
+        run: |
+          if python ./misc/scripts/install_angle.py; then
+            echo "ANGLE_ENABLED=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::ANGLE SDK installation failed, building without ANGLE support."
+            echo "ANGLE_ENABLED=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download AccessKit
+        working-directory: ./scripts/godot
+        shell: sh
+        id: accesskit-sdk
+        run: |
+          if python ./misc/scripts/install_accesskit.py; then
+            echo "ACCESSKIT_ENABLED=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::AccessKit SDK installation failed, building without AccessKit support."
+            echo "ACCESSKIT_ENABLED=no" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Compilation
         working-directory: ./scripts
+        shell: sh
         env:
           SCONS_CACHE: ${{github.workspace}}/.scons_cache/
         run: |
-          scons platform=windows ${{ matrix.opts.build-options }} ${{ env.SCONSFLAGS }}
-        
-      - name: Prepare artifact (Windows)
-        if: matrix.opts.runner == 'windows-latest'
+          scons platform=windows ${{ matrix.opts.build-options }} ${{ env.SCONSFLAGS }} d3d12=${{ steps.d3d12-sdk.outputs.D3D12_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }}
+
+      - name: Prepare artifact
         shell: bash
         run: |
           rm -rf scripts/godot/bin/{*.exp,*.lib,*.pdb}
-      
-      - name: Prepare artifact (Linux)
-        if: matrix.opts.runner != 'windows-latest'
-        shell: bash
-        run: |
-          rm -rf scripts/godot/bin/{*.exp,*.lib,*.pdb}
-          strip scripts/godot/bin/*.exe
 
       - name: Generate Mono Glue
         if: matrix.opts.artifact-name == 'windows-editor-mono'
         shell: bash
         run: |
           cd scripts/godot
-          wine bin/godot.windows.editor.x86_64.luaAPI.mono.exe --headless --generate-mono-glue modules/mono/glue
+          ./bin/godot.windows.editor.x86_64.luaAPI.mono.exe --headless --generate-mono-glue modules/mono/glue
           mkdir bin/nuget_packages
           ./modules/mono/build_scripts/build_assemblies.py --godot-output-dir=./bin --push-nupkgs-local ./bin/nuget_packages
           cp ../mono_instructions.txt bin/
@@ -213,7 +214,7 @@ jobs:
           mv scripts/godot/bin/godot.windows.template_debug.x86_64.luaAPI.exe scripts/godot/templates/windows_debug_x86_64.exe || true
           mv scripts/godot/bin/godot.windows.template_release.x86_32.luaAPI.exe scripts/godot/templates/windows_release_x86_32.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_32.luaAPI.exe scripts/godot/templates/windows_debug_x86_32.exe || true
-          
+
           mv scripts/godot/bin/godot.windows.template_release.x86_64.luaAPI.console.exe scripts/godot/templates/windows_release_x86_64_console.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_64.luaAPI.console.exe scripts/godot/templates/windows_debug_x86_64_console.exe || true
           mv scripts/godot/bin/godot.windows.template_release.x86_32.luaAPI.console.exe scripts/godot/templates/windows_release_x86_32_console.exe || true
@@ -223,13 +224,13 @@ jobs:
           mv scripts/godot/bin/godot.windows.template_debug.x86_64.luaAPI.mono.exe scripts/godot/templates/windows_debug_x86_64.exe || true
           mv scripts/godot/bin/godot.windows.template_release.x86_32.luaAPI.mono.exe scripts/godot/templates/windows_release_x86_32.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_32.luaAPI.mono.exe scripts/godot/templates/windows_debug_x86_32.exe || true
-          
+
           mv scripts/godot/bin/godot.windows.template_release.x86_64.luaAPI.mono.console.exe scripts/godot/templates/windows_release_x86_64_console.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_64.luaAPI.mono.console.exe scripts/godot/templates/windows_debug_x86_64_console.exe || true
           mv scripts/godot/bin/godot.windows.template_release.x86_32.luaAPI.mono.console.exe scripts/godot/templates/windows_release_x86_32_console.exe || true
           mv scripts/godot/bin/godot.windows.template_debug.x86_32.luaAPI.mono.console.exe scripts/godot/templates/windows_debug_x86_32_console.exe || true
 
-          
+
           rm -rf scripts/godot/bin/*
           mv scripts/godot/templates scripts/godot/bin/
 
@@ -238,8 +239,8 @@ jobs:
         shell: bash
         run: |
           cp -n README.md LICENSE scripts/godot/bin/
-      
-      - uses: actions/upload-artifact@v2
+
+      - uses: actions/upload-artifact@v4
         with:
-          name: ${{matrix.opts.artifact-name}}
+          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.artifact-name }}
           path: scripts/godot/bin/*

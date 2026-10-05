@@ -7,7 +7,7 @@ on:
         required: true
         type: boolean
         default: false
-      
+
       godot_version:
         description: "Version of godot to be used"
         required: true
@@ -15,13 +15,13 @@ on:
 
 env:
   BASE_BRANCH: main
-  SCONSFLAGS: "production=yes extra_suffix=luaAPI"
+  SCONSFLAGS: "production=yes extra_suffix=luaAPI swappy=yes"
   SCONS_CACHE_LIMIT: 7168
   GODOT_VERSION: ${{ inputs.godot_version }}-stable
 
 jobs:
   android-builds:
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     name: ${{ matrix.opts.name }}
     strategy:
       fail-fast: false
@@ -32,43 +32,43 @@ jobs:
             artifact-name: android-templates
             build-options: "target=template_debug arch=arm64"
             should-run: true
-          
+
           - name: Android Template (target=template_debug,arch=arm32)
             cache-name: android-debug-arm32
             artifact-name: android-templates
             build-options: "target=template_debug arch=arm32"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Android Template (target=template_debug,arch=x86_64)
             cache-name: android-debug-x86_64
             artifact-name: android-templates
             build-options: "target=template_debug arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Android Template (target=template_debug,arch=x86_32)
             cache-name: android-debug-x86_32
             artifact-name: android-templates
             build-options: "target=template_debug arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Android Template (target=template_release,arch=arm64)
             cache-name: android-debug-arm64
             artifact-name: android-templates
             build-options: "target=template_release arch=arm64"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Android Template (target=template_release,arch=arm32)
             cache-name: android-debug-arm32
             artifact-name: android-templates
             build-options: "target=template_release arch=arm32"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Android Template (target=template_release,arch=x86_64)
             cache-name: android-debug-x86_64
             artifact-name: android-templates
             build-options: "target=template_release arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
-          
+
           - name: Android Template (target=template_release,arch=x86_32)
             cache-name: android-debug-x86_32
             artifact-name: android-templates
@@ -90,7 +90,7 @@ jobs:
           java-version: 11
 
       - name: Load .scons_cache directory
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{github.workspace}}/.scons_cache/
           key: ${{matrix.opts.cache-name}}-${{env.BASE_BRANCH}}-${{github.ref}}-${{github.sha}}
@@ -112,14 +112,24 @@ jobs:
           python --version
           scons --version
 
+      - name: Clone Godot
+        working-directory: ./scripts
+        shell: bash
+        run: git clone --depth 1 --branch ${{ env.GODOT_VERSION }} https://github.com/godotengine/godot godot
+
+      - name: Download Swappy
+        working-directory: ./scripts/godot
+        shell: bash
+        run: python misc/scripts/install_swappy_android.py
+
       - name: Compilation
         working-directory: ./scripts
         env:
           SCONS_CACHE: ${{github.workspace}}/.scons_cache/
         run: |
           scons platform=android ${{ matrix.opts.build-options }} ${{ env.SCONSFLAGS }}
-      
-      - uses: actions/upload-artifact@v2
+
+      - uses: actions/upload-artifact@v4
         with:
-          name: ${{matrix.opts.artifact-name}}
+          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.artifact-name }}
           path: scripts/godot/platform/android/java/lib/libs/*

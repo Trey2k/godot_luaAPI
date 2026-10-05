@@ -4,11 +4,7 @@
 #ifndef LAPI_GDEXTENSION
 #include <core/string/print_string.h>
 #else
-#include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/core/print_string.hpp>
 using namespace godot;
-
-inline void print_line(const Variant &v) {
-	UtilityFunctions::print(v);
-}
 #endif
 #endif

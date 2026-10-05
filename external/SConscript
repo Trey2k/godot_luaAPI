@@ -1,7 +1,10 @@
-# Used for extension builds 
+# Used for extension builds
 from build_luajit import build_luajit
 
-env = SConscript("godot-cpp/SConstruct")
+# 4.3 is the lowest api_version godot-cpp 10 supports, and the binding needs
+# nothing newer, so extensions built here load on Godot 4.3 and up. Keep it in
+# step with compatibility_minimum in project/addons/luaAPI/luaAPI.gdextension.
+env = SConscript("godot-cpp/SConstruct", {"api_version": "4.3"})
 
 Import('configure')
 configure(env)
