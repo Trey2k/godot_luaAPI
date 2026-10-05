@@ -173,12 +173,12 @@ jobs:
           sudo apt-get update
           sudo apt install gcc-multilib g++-multilib
 
-      - name: Set up Java 11 (Android)
+      - name: Set up Java 17 (Android)
         if: matrix.opts.platform == 'android'
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: (Windows) Install mingw64
         if: ${{ startsWith(matrix.opts.identifier, 'windows-') }}
@@ -188,6 +188,8 @@ jobs:
           sudo apt-get install mingw-w64
           sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set i686-w64-mingw32-gcc /usr/bin/i686-w64-mingw32-gcc-posix
+          sudo update-alternatives --set i686-w64-mingw32-g++ /usr/bin/i686-w64-mingw32-g++-posix
 
       - name: (Linux) Install buildroot x86_64
         if: ${{ startsWith(matrix.opts.identifier, 'linux-') && contains(matrix.opts.arch, 'x86_64')}}
@@ -367,6 +369,8 @@ jobs:
           sudo apt-get install mingw-w64
           sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set i686-w64-mingw32-gcc /usr/bin/i686-w64-mingw32-gcc-posix
+          sudo update-alternatives --set i686-w64-mingw32-g++ /usr/bin/i686-w64-mingw32-g++-posix
 
       - name: (Linux) Install buildroot x86_64
         if: ${{ startsWith(matrix.opts.identifier, 'linux-') && contains(matrix.opts.arch, 'x86_64')}}
