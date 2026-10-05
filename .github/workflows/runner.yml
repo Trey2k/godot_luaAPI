@@ -73,6 +73,8 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: android-build
     uses: ./.github/workflows/android-package.yml
+    with:
+      godot_version: 4.7.2
 
   ios-build:
     name: 🍎 IOS
@@ -87,6 +89,8 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: ios-build
     uses: ./.github/workflows/ios-package.yml
+    with:
+      godot_version: 4.7.2
 
   web-build:
     name: 🌐 Web

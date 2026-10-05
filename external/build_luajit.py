@@ -1,15 +1,11 @@
 import sys
 import os
 import platform
+import subprocess
 
-def run(cmd):
+def run(cmd, env=None):
     print("Running: %s" % cmd)
-    res = os.system(cmd)
-    code = 0
-    if (os.name == 'nt'):
-        code = res
-    else:
-        code = os.WEXITSTATUS(res)
+    code = subprocess.call(cmd, shell=True, env=env)
     if code != 0:
         print("Error: return code: " + str(code))
         sys.exit(code)
@@ -17,7 +13,7 @@ def run(cmd):
 def build_luajit(env, extension=False):
     if extension or not env.msvc:
         os.chdir("luaJIT")
-        
+
         # cross compile posix->windows
         if (os.name == 'posix') and env['platform'] == 'windows':
             host_arch = platform.machine()
@@ -37,14 +33,14 @@ def build_luajit(env, extension=False):
             run("make clean MACOSX_DEPLOYMENT_TARGET=10.12")
             arch = env['arch']
             if arch == "universal":
-                run('make CC="%s" TARGET_FLAGS="-arch x86_64" MACOSX_DEPLOYMENT_TARGET=10.12' % (env['CC']))
+                run('make CC="%s" TARGET_FLAGS="-arch x86_64" BUILDMODE="static" MACOSX_DEPLOYMENT_TARGET=10.12' % (env['CC']))
                 run('mv src/libluajit.a src/libluajit64.a')
                 run('make clean MACOSX_DEPLOYMENT_TARGET=10.12')
-                run('make CC="%s" TARGET_FLAGS="-arch arm64" MACOSX_DEPLOYMENT_TARGET=10.12' % (env['CC']))
+                run('make CC="%s" TARGET_FLAGS="-arch arm64" BUILDMODE="static" MACOSX_DEPLOYMENT_TARGET=10.12' % (env['CC']))
                 run('lipo -create src/libluajit.a src/libluajit64.a -output src/libluajit.a')
                 run('rm src/libluajit64.a')
             else:
-                run('make CC="%s" TARGET_FLAGS="-arch %s" MACOSX_DEPLOYMENT_TARGET=10.12' % (env['CC'], arch))
+                run('make CC="%s" TARGET_FLAGS="-arch %s" BUILDMODE="static" MACOSX_DEPLOYMENT_TARGET=10.12' % (env['CC'], arch))
         elif env['platform']=='linuxbsd' or env['platform']=='linux':
             host_arch = platform.machine()
             run("make clean")
@@ -65,4 +61,9 @@ def build_luajit(env, extension=False):
             sys.exit(-1)
     else:
         os.chdir("luaJIT/src")
-        run("msvcbuild static")
+        # msvcbuild.bat needs cl.exe, which is only on PATH inside a Visual
+        # Studio environment. SCons keeps what it detected in env['ENV'], so hand
+        # that to the subprocess rather than relying on the caller's shell.
+        msvc_env = dict(os.environ)
+        msvc_env.update({k: str(v) for k, v in env["ENV"].items()})
+        run("msvcbuild static", env=msvc_env)

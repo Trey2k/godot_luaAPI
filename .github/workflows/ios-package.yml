@@ -1,6 +1,11 @@
 name: 🍎 IOS Package
 on:
   workflow_call:
+    inputs:
+      godot_version:
+        description: "Version of godot to be used"
+        required: true
+        type: string
 
 jobs:
   ios-package:
@@ -21,7 +26,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: godotengine/godot
-          ref: master
+          ref: ${{ inputs.godot_version }}-stable
           path: scripts/godot
 
       - name: Setup Vulkan SDK
@@ -45,7 +50,7 @@ jobs:
       - name: Make universal binaries and bundle (template)
         working-directory: ./scripts/godot/bin
         run: |
-          cp -r ../misc/dist/ios_xcode .
+          cp -r ../misc/dist/apple_embedded_xcode ios_xcode
 
           strip *.a
 
@@ -58,7 +63,16 @@ jobs:
           lipo -create libgodot.ios.template_release.arm64.simulator.luaAPI.a libgodot.ios.template_release.x86_64.simulator.luaAPI.a -output ios_xcode/libgodot.ios.release.xcframework/ios-arm64_x86_64-simulator/libgodot.a
           rm -rf libgodot.ios.template_release.arm64.simulator.luaAPI.a libgodot.ios.template_release.x86_64.simulator.luaAPI.a
 
-          cp -r ~/VulkanSDK/*/MoltenVK/MoltenVK.xcframework ios_xcode
+          # The SDK layout moves between releases: 1.4.363 no longer has it at
+          # VulkanSDK/<version>/MoltenVK/. Godot 4.7's iOS export still injects a
+          # reference to this framework, so a missing one has to fail loudly
+          # rather than produce a broken template.
+          moltenvk="$(find "$HOME/VulkanSDK" -type d -name MoltenVK.xcframework -print -quit)"
+          if [ -z "$moltenvk" ]; then
+            echo "::error::MoltenVK.xcframework not found under $HOME/VulkanSDK"
+            exit 1
+          fi
+          cp -r "$moltenvk" ios_xcode
           rm -rf ios_xcode/MoltenVK.xcframework/{macos,tvos}*
           mkdir templates
           cd ios_xcode
