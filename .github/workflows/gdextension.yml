@@ -256,15 +256,13 @@ jobs:
         run: |
           rm -rf ${{ github.workspace }}/project/.g* ${{ github.workspace }}/project/project.godot ${{ github.workspace }}/project/testing ${{ github.workspace }}/project/addons/luaAPI/bin/.gitignore
           cp -n '${{ github.workspace }}/README.md' '${{ github.workspace }}/LICENSE' ${{ github.workspace }}/project/addons/luaAPI
-          mkdir ${{ github.workspace }}/project/container
-          mv ${{ github.workspace }}/project/addons/ ${{ github.workspace }}/project/container/addons/
-          mv ${{ github.workspace }}/project/demo/ ${{ github.workspace }}/project/container/demo/
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-lua-${{ matrix.opts.identifier }}
           path: |
-            ${{ github.workspace }}/project/
+            ${{ github.workspace }}/project/addons
+            ${{ github.workspace }}/project/demo
 
   gdextension-luajit:
     runs-on: ${{ matrix.opts.runner }}
@@ -444,12 +442,10 @@ jobs:
         run: |
           rm -rf ${{ github.workspace }}/project/.g* ${{ github.workspace }}/project/project.godot ${{ github.workspace }}/project/testing ${{ github.workspace }}/project/addons/luaAPI/bin/.gitignore
           cp -n '${{ github.workspace }}/README.md' '${{ github.workspace }}/LICENSE' ${{ github.workspace }}/project/addons/luaAPI
-          mkdir ${{ github.workspace }}/project/container
-          mv ${{ github.workspace }}/project/addons/ ${{ github.workspace }}/project/container/addons/
-          mv ${{ github.workspace }}/project/demo/ ${{ github.workspace }}/project/container/demo/
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-luajit-${{ matrix.opts.identifier }}
           path: |
-            ${{ github.workspace }}/project/
+            ${{ github.workspace }}/project/addons
+            ${{ github.workspace }}/project/demo
