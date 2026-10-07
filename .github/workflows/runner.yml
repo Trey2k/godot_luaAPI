@@ -143,12 +143,12 @@ jobs:
       - name: Upload version file
         uses: actions/upload-artifact@v4
         with:
-          name: modules-templates-version
+          name: module-templates-version
           path: ${{ github.workspace }}/bin/*
       - name: Upload Mono version file
         uses: actions/upload-artifact@v4
         with:
-          name: modules-mono-templates-version
+          name: module-mono-templates-version
           path: ${{ github.workspace }}/bin-mono/*
 
   # Each build job uploads its own piece, because upload-artifact v4 refuses two
@@ -184,8 +184,8 @@ jobs:
     steps:
       - uses: actions/upload-artifact/merge@v4
         with:
-          name: modules-export-templates
-          pattern: modules-templates-*
+          name: module-export-templates
+          pattern: module-templates-*
           delete-merged: true
 
   merge-export-templates-mono:
@@ -196,6 +196,6 @@ jobs:
     steps:
       - uses: actions/upload-artifact/merge@v4
         with:
-          name: modules-export-templates-mono
-          pattern: modules-mono-templates-*
+          name: module-export-templates-mono
+          pattern: module-mono-templates-*
           delete-merged: true
