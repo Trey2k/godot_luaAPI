@@ -29,67 +29,67 @@ jobs:
         opts:
           - name: Linux Editor (target=editor)
             cache-name: linux-editor
-            artifact-name: modules-linux-editor
+            artifact-name: module-linux-editor
             build-options: "target=editor arch=x86_64"
             should-run: true
 
           - name: Linux Editor LuaJIT (target=editor,luaapi_luaver=jit)
             cache-name: linux-editor-luajit
-            artifact-name: modules-linux-editor-luajit
+            artifact-name: module-linux-editor-luajit
             build-options: "target=editor luaapi_luaver=jit arch=x86_64"
             should-run: true
 
           - name: Linux Template (target=template_release,arch=x86_64)
             cache-name: linux-template
-            artifact-name: modules-templates-linux-release-x86_64
+            artifact-name: module-templates-linux-release-x86_64
             build-options: "target=template_release arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Debug (target=template_debug,arch=x86_64)
             cache-name: linux-template-debug
-            artifact-name: modules-templates-linux-debug-x86_64
+            artifact-name: module-templates-linux-debug-x86_64
             build-options: "target=template_debug arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template (target=template_release,arch=x86_32)
             cache-name: linux-template
-            artifact-name: modules-templates-linux-release-x86_32
+            artifact-name: module-templates-linux-release-x86_32
             build-options: "target=template_release arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Debug (target=template_debug,arch=x86_32)
             cache-name: linux-template-debug
-            artifact-name: modules-templates-linux-debug-x86_32
+            artifact-name: module-templates-linux-debug-x86_32
             build-options: "target=template_debug arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Editor Mono (target=editor,module_mono_enabled=yes)
             cache-name: linux-editor-mono
-            artifact-name: modules-linux-editor-mono
+            artifact-name: module-linux-editor-mono
             build-options: "target=editor module_mono_enabled=yes arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_64)
             cache-name: linux-template-mono
-            artifact-name: modules-mono-templates-linux-release-x86_64
+            artifact-name: module-mono-templates-linux-release-x86_64
             build-options: "target=template_release module_mono_enabled=yes arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_64)
             cache-name: linux-template-debug-mono
-            artifact-name: modules-mono-templates-linux-debug-x86_64
+            artifact-name: module-mono-templates-linux-debug-x86_64
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_32)
             cache-name: linux-template-mono
-            artifact-name: modules-mono-templates-linux-release-x86_32
+            artifact-name: module-mono-templates-linux-release-x86_32
             build-options: "target=template_release module_mono_enabled=yes arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Linux Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_32)
             cache-name: linux-template-debug-mono
-            artifact-name: modules-mono-templates-linux-debug-x86_32
+            artifact-name: module-mono-templates-linux-debug-x86_32
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_32"
             should-run: ${{ inputs.fullbuild }}
 

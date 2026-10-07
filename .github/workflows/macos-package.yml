@@ -25,7 +25,7 @@ jobs:
             cache-name: macos-editor
             editor: true
             artifact-name: parts-macos-*-editor
-            final-artifact-name: modules-macos-editor
+            final-artifact-name: module-macos-editor
             should-run: true
 
           - name: macOS Mono Editor
@@ -33,26 +33,26 @@ jobs:
             editor: true
             mono: true
             artifact-name: parts-macos-*-editor-mono
-            final-artifact-name: modules-macos-editor-mono
+            final-artifact-name: module-macos-editor-mono
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Editor LuaJIT
             editor: true
             artifact-name: parts-macos-*-editor-luajit
-            final-artifact-name: modules-macos-editor-luajit
+            final-artifact-name: module-macos-editor-luajit
             should-run: ${{ inputs.fullbuild }}
 
           - name: MacOS Templates
             template: true
             artifact-name: parts-templates-macos-*
-            final-artifact-name: modules-templates-macos
+            final-artifact-name: module-templates-macos
             should-run: ${{ inputs.fullbuild }}
 
           - name: MacOS Templates Mono
             template: true
             mono: true
             artifact-name: parts-mono-templates-macos-*
-            final-artifact-name: modules-mono-templates-macos
+            final-artifact-name: module-mono-templates-macos
             should-run: ${{ inputs.fullbuild }}
         exclude:
           - {opts: {should-run: false}}

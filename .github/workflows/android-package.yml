@@ -17,7 +17,7 @@ jobs:
         opts:
           - name: Android Templates
             artifact-name: parts-templates-android-*
-            final-artifact-name: modules-templates-android
+            final-artifact-name: module-templates-android
 
     steps:
       - uses: actions/checkout@v3

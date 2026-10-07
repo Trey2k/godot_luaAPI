@@ -28,77 +28,77 @@ jobs:
         opts:
           - name: Windows Editor (target=editor)
             cache-name: windows-editor
-            artifact-name: modules-windows-editor
+            artifact-name: module-windows-editor
             build-options: "target=editor"
             runner: "windows-latest"
             should-run: true
 
           - name: Windows Editor LuaJIT (target=editor,luaapi_luaver=jit)
             cache-name: windows-editor-luajit
-            artifact-name: modules-windows-editor-luajit
+            artifact-name: module-windows-editor-luajit
             build-options: "target=editor luaapi_luaver=jit debug_symbols=no"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template (target=template_release,arch=x86_64)
             cache-name: windows-template
-            artifact-name: modules-templates-windows-release-x86_64
+            artifact-name: module-templates-windows-release-x86_64
             build-options: "target=template_release arch=x86_64"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug (target=template_debug,arch=x86_64)
             cache-name: windows-template-debug
-            artifact-name: modules-templates-windows-debug-x86_64
+            artifact-name: module-templates-windows-debug-x86_64
             build-options: "target=template_debug arch=x86_64"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template (target=template_release,arch=x86_32)
             cache-name: windows-template
-            artifact-name: modules-templates-windows-release-x86_32
+            artifact-name: module-templates-windows-release-x86_32
             build-options: "target=template_release arch=x86_32"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug (target=template_debug,arch=x86_32)
             cache-name: windows-template-debug
-            artifact-name: modules-templates-windows-debug-x86_32
+            artifact-name: module-templates-windows-debug-x86_32
             build-options: "target=template_debug arch=x86_32"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Editor Mono (target=editor,module_mono_enabled=yes)
             cache-name: windows-editor-mono
-            artifact-name: modules-windows-editor-mono
+            artifact-name: module-windows-editor-mono
             build-options: "target=editor module_mono_enabled=yes"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_64)
             cache-name: windows-template-mono
-            artifact-name: modules-mono-templates-windows-release-x86_64
+            artifact-name: module-mono-templates-windows-release-x86_64
             build-options: "target=template_release module_mono_enabled=yes arch=x86_64"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_64)
             cache-name: windows-template-debug-mono
-            artifact-name: modules-mono-templates-windows-debug-x86_64
+            artifact-name: module-mono-templates-windows-debug-x86_64
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_64"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_32)
             cache-name: windows-template-mono
-            artifact-name: modules-mono-templates-windows-release-x86_32
+            artifact-name: module-mono-templates-windows-release-x86_32
             build-options: "target=template_release module_mono_enabled=yes arch=x86_32"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Windows Template Debug Mono (target=template_debug,module_mono_enabled=yes,arch=x86_32)
             cache-name: windows-template-debug-mono
-            artifact-name: modules-mono-templates-windows-debug-x86_32
+            artifact-name: module-mono-templates-windows-debug-x86_32
             build-options: "target=template_debug module_mono_enabled=yes arch=x86_32"
             runner: "windows-latest"
             should-run: ${{ inputs.fullbuild }}
