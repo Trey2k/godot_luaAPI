@@ -29,37 +29,37 @@ jobs:
         opts:
           - name: IOS Template (target=template_debug,arch=arm64)
             cache-name: ios-template-debug-arm
-            artifact-name: ios-templates
+            artifact-name: parts-templates-ios-debug-arm64
             build-options: "arch=arm64 target=template_debug"
             should-run: true
 
           - name: IOS Template (target=template_release,arch=arm64)
             cache-name: ios-template-release-arm64
-            artifact-name: ios-templates
+            artifact-name: parts-templates-ios-release-arm64
             build-options: "arch=arm64 target=template_release"
             should-run: ${{ inputs.fullbuild }}
 
           - name: IOS Simulator Template (target=template_debug,arch=x86_64)
             cache-name: ios-simulator-template-debug-x86
-            artifact-name: ios-templates
+            artifact-name: parts-templates-ios-debug-x86_64-simulator
             build-options: "arch=x86_64 target=template_debug ios_simulator=yes"
             should-run: ${{ inputs.fullbuild }}
 
           - name: IOS Simulator Template (target=template_release,arch=x86_64)
             cache-name: ios-simulator-template-release-x86
-            artifact-name: ios-templates
+            artifact-name: parts-templates-ios-release-x86_64-simulator
             build-options: "arch=x86_64 target=template_release ios_simulator=yes"
             should-run: ${{ inputs.fullbuild }}
 
           - name: IOS Simulator Template (target=template_debug,arch=arm64)
             cache-name: ios-simulator-template-debug-arm64
-            artifact-name: ios-templates
+            artifact-name: parts-templates-ios-debug-arm64-simulator
             build-options: "arch=arm64 target=template_debug ios_simulator=yes"
             should-run: ${{ inputs.fullbuild }}
 
           - name: IOS Simulator Template (target=template_release,arch=arm64)
             cache-name: ios-simulator-template-release-arm64
-            artifact-name: ios-templates
+            artifact-name: parts-templates-ios-release-arm64-simulator
             build-options: "arch=arm64 target=template_release ios_simulator=yes"
             should-run: ${{ inputs.fullbuild }}
         exclude:
@@ -106,5 +106,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.artifact-name }}
+          name: ${{ matrix.opts.artifact-name }}
           path: scripts/godot/bin/*

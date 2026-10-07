@@ -29,85 +29,85 @@ jobs:
         opts:
           - name: macOS Editor (target=editor,arch=x86_64)
             cache-name: macos-editor-x86
-            artifact-name: macos-editor-bins
+            artifact-name: parts-macos-x86_64-editor
             build-options: "target=editor arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Editor (target=editor,arch=arm64)
             cache-name: macos-editor-arm64
-            artifact-name: macos-editor-bins
+            artifact-name: parts-macos-arm64-editor
             build-options: "target=editor arch=arm64"
             should-run: true
 
           - name: macOS Editor LuaJIT (target=editor,luaapi_luaver=jit,arch=x86_64)
             cache-name: macos-editor-luajit-x86
-            artifact-name: macos-editor-luajit-bins
+            artifact-name: parts-macos-x86_64-editor-luajit
             build-options: "target=editor luaapi_luaver=jit arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Editor LuaJIT (target=editor,luaapi_luaver=jit,arch=arm64)
             cache-name: macos-editor-luajit-arm64
-            artifact-name: macos-editor-luajit-bins
+            artifact-name: parts-macos-arm64-editor-luajit
             build-options: "target=editor luaapi_luaver=jit arch=arm64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Template (target=template_debug,arch=x86_64)
             cache-name: macos-template-debug-x86
-            artifact-name: macos-templates
+            artifact-name: parts-templates-macos-debug-x86_64
             build-options: "arch=x86_64 target=template_debug"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Template (target=template_debug,arch=arm64)
             cache-name: macos-template-debug-arm
-            artifact-name: macos-templates
+            artifact-name: parts-templates-macos-debug-arm64
             build-options: "arch=arm64 target=template_debug"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Template (target=template_release,arch=x86_64)
             cache-name: macos-template-release-x86
-            artifact-name: macos-templates
+            artifact-name: parts-templates-macos-release-x86_64
             build-options: "arch=x86_64 target=template_release"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Template (target=template_release,arch=arm64)
             cache-name: macos-template-release-arm
-            artifact-name: macos-templates
+            artifact-name: parts-templates-macos-release-arm64
             build-options: "arch=arm64 target=template_release"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Editor Mono (target=editor,module_mono_enabled=yes,arch=x86_64)
             cache-name: macos-editor-mono-x86
-            artifact-name: macos-editor-mono-bins
+            artifact-name: parts-macos-x86_64-editor-mono
             build-options: "target=editor module_mono_enabled=yes arch=x86_64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Editor Mono (target=editor,module_mono_enabled=yes,arch=arm64)
             cache-name: macos-editor-mono-arm64
-            artifact-name: macos-editor-mono-bins
+            artifact-name: parts-macos-arm64-editor-mono
             build-options: "target=editor module_mono_enabled=yes arch=arm64"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Template Mono (target=template_debug,module_mono_enabled=yes,arch=x86_64)
             cache-name: macos-template-debug-mono-x86
-            artifact-name: macos-templates-mono
+            artifact-name: parts-mono-templates-macos-debug-x86_64
             build-options: "arch=x86_64 module_mono_enabled=yes target=template_debug"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Template Mono (target=template_debug,module_mono_enabled=yes,arch=arm64)
             cache-name: macos-template-debug-mono-arm
-            artifact-name: macos-templates-mono
+            artifact-name: parts-mono-templates-macos-debug-arm64
             build-options: "arch=arm64 module_mono_enabled=yes target=template_debug"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Template Mono (target=template_release,module_mono_enabled=yes,arch=x86_64)
             cache-name: macos-template-release-mono-x86
-            artifact-name: macos-templates-mono
+            artifact-name: parts-mono-templates-macos-release-x86_64
             build-options: "arch=x86_64 module_mono_enabled=yes target=template_release"
             should-run: ${{ inputs.fullbuild }}
 
           - name: macOS Template Mono (target=template_release,module_mono_enabled=yes,arch=arm64)
             cache-name: macos-template-release-mono-arm
-            artifact-name: macos-templates-mono
+            artifact-name: parts-mono-templates-macos-release-arm64
             build-options: "arch=arm64 module_mono_enabled=yes target=template_release"
             should-run: ${{ inputs.fullbuild }}
 
@@ -162,5 +162,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.artifact-name }}
+          name: ${{ matrix.opts.artifact-name }}
           path: scripts/godot/bin/*

@@ -31,25 +31,25 @@ jobs:
         opts:
           - name: Web Template (target=template_release)
             cache-name: web-template-release
-            artifact-name: export-templates
+            artifact-name: modules-templates-web-release
             build-options: "target=template_release"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Web Template DLink (target=template_release,dlink_enabled=yes)
             cache-name: web-template-dlink-release
-            artifact-name: export-templates
+            artifact-name: modules-templates-web-release-dlink
             build-options: "target=template_release dlink_enabled=yes"
             should-run: ${{ inputs.fullbuild }}
 
           - name: Web Template (target=template_debug)
             cache-name: web-template-debug
-            artifact-name: export-templates
+            artifact-name: modules-templates-web-debug
             build-options: "target=template_debug"
             should-run: true
 
           - name: Web Template DLink (target=template_debug,dlink_enabled=yes)
             cache-name: web-template-dlink-release
-            artifact-name: export-templates
+            artifact-name: modules-templates-web-debug-dlink
             build-options: "target=template_debug dlink_enabled=yes"
             should-run: ${{ inputs.fullbuild }}
 
@@ -112,5 +112,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.artifact-name }}
+          name: ${{ matrix.opts.artifact-name }}
           path: scripts/godot/bin/*

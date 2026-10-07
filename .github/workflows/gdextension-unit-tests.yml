@@ -27,7 +27,7 @@ jobs:
         id: download-extension
         uses: actions/download-artifact@v4
         with:
-          pattern: gdext-lua-*
+          pattern: gdextension-lua-*
           merge-multiple: true
           path: project/
       - name: Run Unit Tests
@@ -69,7 +69,7 @@ jobs:
         id: download-extension
         uses: actions/download-artifact@v4
         with:
-          pattern: gdext-luajit-*
+          pattern: gdextension-luajit-*
           merge-multiple: true
           path: project/
       - name: Run Unit Tests
