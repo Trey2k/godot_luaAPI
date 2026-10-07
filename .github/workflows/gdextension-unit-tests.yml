@@ -29,10 +29,10 @@ jobs:
         with:
           pattern: gdextension-lua-*
           merge-multiple: true
-          path: project/
+          path: extension/
       - name: Run Unit Tests
         run: |
-          rm -rf project/addons && mv project/container/addons project/addons
+          rm -rf project/addons && mv extension/addons project/addons
           set -o pipefail
           # Any godot-cpp 10 extension that registers a class segfaults Godot
           # 4.7.2's headless editor at shutdown, godot-cpp's own test project
@@ -71,10 +71,10 @@ jobs:
         with:
           pattern: gdextension-luajit-*
           merge-multiple: true
-          path: project/
+          path: extension/
       - name: Run Unit Tests
         run: |
-          rm -rf project/addons && mv project/container/addons project/addons
+          rm -rf project/addons && mv extension/addons project/addons
           set -o pipefail
           # Any godot-cpp 10 extension that registers a class segfaults Godot
           # 4.7.2's headless editor at shutdown, godot-cpp's own test project
