@@ -143,10 +143,59 @@ jobs:
       - name: Upload version file
         uses: actions/upload-artifact@v4
         with:
-          name: version--export-templates
+          name: modules-templates-version
           path: ${{ github.workspace }}/bin/*
       - name: Upload Mono version file
         uses: actions/upload-artifact@v4
         with:
-          name: version--export-templates-mono
+          name: modules-mono-templates-version
           path: ${{ github.workspace }}/bin-mono/*
+
+  # Each build job uploads its own piece, because upload-artifact v4 refuses two
+  # writes to one name. These jobs put the pieces back together into the
+  # artifacts someone actually downloads, and delete-merged removes the pieces.
+  merge-gdextension:
+    name: 📦 GDExtension
+    needs: [gdextension-unit-tests]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/upload-artifact/merge@v4
+        with:
+          name: gdextension
+          pattern: gdextension-lua-*
+          delete-merged: true
+
+  merge-gdextension-luajit:
+    name: 📦 GDExtension LuaJIT
+    needs: [gdextension-unit-tests]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/upload-artifact/merge@v4
+        with:
+          name: gdextension-luajit
+          pattern: gdextension-luajit-*
+          delete-merged: true
+
+  merge-export-templates:
+    name: 📦 Export templates
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: [template-version-file, linux-build, windows-build, web-build, macos-package, ios-package, android-package]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/upload-artifact/merge@v4
+        with:
+          name: modules-export-templates
+          pattern: modules-templates-*
+          delete-merged: true
+
+  merge-export-templates-mono:
+    name: 📦 Export templates (Mono)
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: [template-version-file, linux-build, windows-build, macos-package]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/upload-artifact/merge@v4
+        with:
+          name: modules-export-templates-mono
+          pattern: modules-mono-templates-*
+          delete-merged: true

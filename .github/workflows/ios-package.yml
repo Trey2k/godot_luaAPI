@@ -16,8 +16,8 @@ jobs:
       matrix:
         opts:
           - name: IOS Templates
-            artifact-name: ios-templates
-            final-artifact-name: export-templates
+            artifact-name: parts-templates-ios-*
+            final-artifact-name: modules-templates-ios
 
     steps:
       - uses: actions/checkout@v3
@@ -37,14 +37,14 @@ jobs:
         id: download-artifact
         uses: actions/download-artifact@v4
         with:
-          pattern: "*--${{ matrix.opts.artifact-name }}"
+          pattern: "${{ matrix.opts.artifact-name }}"
           merge-multiple: true
           path: scripts/godot/bin
 
       - name: Delete Artifact
         uses: geekyeggo/delete-artifact@v5
         with:
-          name: "*--${{ matrix.opts.artifact-name }}"
+          name: "${{ matrix.opts.artifact-name }}"
           useGlob: true
 
       - name: Make universal binaries and bundle (template)
@@ -82,5 +82,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.final-artifact-name }}
+          name: ${{ matrix.opts.final-artifact-name }}
           path: scripts/godot/bin/*

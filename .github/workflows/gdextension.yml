@@ -262,7 +262,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gdext-lua-${{ matrix.opts.identifier }}
+          name: gdextension-lua-${{ matrix.opts.identifier }}
           path: |
             ${{ github.workspace }}/project/
 
@@ -450,6 +450,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gdext-luajit-${{ matrix.opts.identifier }}
+          name: gdextension-luajit-${{ matrix.opts.identifier }}
           path: |
             ${{ github.workspace }}/project/

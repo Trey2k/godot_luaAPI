@@ -16,8 +16,7 @@ jobs:
         id: download-extension
         uses: actions/download-artifact@v4
         with:
-          pattern: "*--linux-editor"
-          merge-multiple: true
+          name: modules-linux-editor
           path: ./
       - name: Unit Tests
         run: |
@@ -46,8 +45,7 @@ jobs:
         id: download-extension
         uses: actions/download-artifact@v4
         with:
-          pattern: "*--linux-editor-luajit"
-          merge-multiple: true
+          name: modules-linux-editor-luajit
           path: ./
       - name: Unit Testing
         run: |

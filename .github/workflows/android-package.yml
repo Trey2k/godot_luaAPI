@@ -16,8 +16,8 @@ jobs:
       matrix:
         opts:
           - name: Android Templates
-            artifact-name: android-templates
-            final-artifact-name: export-templates
+            artifact-name: parts-templates-android-*
+            final-artifact-name: modules-templates-android
 
     steps:
       - uses: actions/checkout@v3
@@ -33,14 +33,14 @@ jobs:
         id: download-artifact
         uses: actions/download-artifact@v4
         with:
-          pattern: "*--${{ matrix.opts.artifact-name }}"
+          pattern: "${{ matrix.opts.artifact-name }}"
           merge-multiple: true
           path: scripts/godot/platform/android/java/lib/libs
 
       - name: Delete Artifact
         uses: geekyeggo/delete-artifact@v5
         with:
-          name: "*--${{ matrix.opts.artifact-name }}"
+          name: "${{ matrix.opts.artifact-name }}"
           useGlob: true
 
       - name: Set up Java 11
@@ -77,5 +77,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}-${{ strategy.job-index }}--${{ matrix.opts.final-artifact-name }}
+          name: ${{ matrix.opts.final-artifact-name }}
           path: scripts/godot/bin/*
