@@ -192,6 +192,9 @@ jobs:
       - name: Prepare artifact
         shell: bash
         run: |
+          # Godot 4.7 builds objects into bin/obj. They are not part of a release
+          # and dwarf the binaries: 2.9 GB of objects against a 170 MB editor.
+          rm -rf scripts/godot/bin/obj
           rm -rf scripts/godot/bin/{*.exp,*.lib,*.pdb}
 
       - name: Generate Mono Glue
@@ -205,7 +208,7 @@ jobs:
           cp ../mono_instructions.txt bin/
 
       - name: Prepare templates
-        if: ${{ contains(matrix.opts.artifact-name, 'export-templates') }}
+        if: ${{ contains(matrix.opts.artifact-name, 'templates') }}
         shell: bash
         run: |
           mkdir -p scripts/godot/templates
@@ -235,7 +238,7 @@ jobs:
           mv scripts/godot/templates scripts/godot/bin/
 
       - name: Copy License
-        if: ${{ !contains(matrix.opts.artifact-name, 'export-templates') }}
+        if: ${{ !contains(matrix.opts.artifact-name, 'templates') }}
         shell: bash
         run: |
           cp -n README.md LICENSE scripts/godot/bin/
