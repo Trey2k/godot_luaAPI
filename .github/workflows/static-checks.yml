@@ -13,9 +13,9 @@ jobs:
           fetch-depth: 2
 
       - name: Install APT dependencies
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: dos2unix libxml2-utils moreutils
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends dos2unix libxml2-utils moreutils
 
       - name: Install Python dependencies and general setup
         run: |
