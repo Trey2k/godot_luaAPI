@@ -33,10 +33,20 @@ AGENT="$(lua_agent)" || {
   exit 1
 }
 
-PYTHON_BIN="$(command -v python3 || command -v python)" || {
-  echo "Error: no python3/python on PATH. Needed to read API responses." >&2
+# Windows ships a python3 stub that prints an advert and exits non-zero, and it
+# comes before the real interpreter on PATH. Pick the first one that actually
+# runs rather than the first one that exists.
+PYTHON_BIN=""
+for candidate in python3 python; do
+  if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -c "" >/dev/null 2>&1; then
+    PYTHON_BIN="$(command -v "$candidate")"
+    break
+  fi
+done
+if [[ -z "$PYTHON_BIN" ]]; then
+  echo "Error: no working python3/python on PATH. Needed to read API responses." >&2
   exit 1
-}
+fi
 
 source "$AGENTS_DIR/lib/github_app.sh"
 
