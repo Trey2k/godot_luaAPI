@@ -160,6 +160,12 @@ jobs:
         run: |
           scons platform=macos ${{ matrix.opts.build-options }} ${{ env.SCONSFLAGS }}
 
+      - name: Prepare artifact
+        run: |
+          # Godot 4.7 builds objects into bin/obj. They are not part of a release
+          # and dwarf the binaries: 2.9 GB of objects against a 170 MB editor.
+          rm -rf scripts/godot/bin/obj
+
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.opts.artifact-name }}
