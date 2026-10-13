@@ -38,7 +38,7 @@ def code_gen(luaJIT=False):
     for library in os.listdir("./"):
         if not os.path.isdir(library) or library == "__pycache__" or library == "bin":
             continue
-        
+
         libraries.append(library)
 
         for source_file in os.listdir("./%s" % library):
@@ -46,12 +46,12 @@ def code_gen(luaJIT=False):
                 lib_source_files.append(os.path.join(library, source_file))
 
     luaLibraries_gen_cpp = "#include \"lua_libraries.h\"\n#include <map>\n#include <string>\n\n"
-    
+
     if len(lib_source_files) > 0:
         for source_file in lib_source_files:
             luaLibraries_gen_cpp += "#include \"%s\"\n" % source_file
         luaLibraries_gen_cpp += "\n"
-    
+
     luaLibraries_gen_cpp += "std::map<std::string, lua_CFunction> luaLibraries = {\n"
 
     for library in libraries:
@@ -61,17 +61,26 @@ def code_gen(luaJIT=False):
     if luaJIT:
         luaLibraries_gen_cpp += """
 bool loadLuaLibrary(lua_State *L, String libraryName) {
-	const char *lib_c_str = libraryName.ascii().get_data();
-	if (luaLibraries[lib_c_str] == nullptr) {
+	// The CharString owns the buffer get_data() points at, so it has to outlive
+	// every use of lib_c_str. Reading it from a temporary left the name pointing
+	// at freed memory, which registered libraries under whatever happened to be
+	// there.
+	CharString libraryNameAscii = libraryName.ascii();
+	const char *lib_c_str = libraryNameAscii.get_data();
+
+	// find rather than operator[], which inserts a null entry for every name
+	// that does not exist.
+	auto library = luaLibraries.find(lib_c_str);
+	if (library == luaLibraries.end() || library->second == nullptr) {
 		return false;
 	}
-	
-    lua_pushcfunction(L, luaLibraries[lib_c_str]);
-    if (libraryName == "base") {
-        lua_pushstring(L, "");
-    } else {
-	    lua_pushstring(L, lib_c_str);
-    }
+
+	lua_pushcfunction(L, library->second);
+	if (libraryName == "base") {
+		lua_pushstring(L, "");
+	} else {
+		lua_pushstring(L, lib_c_str);
+	}
 	lua_call(L, 1, 0);
 	return true;
 }
@@ -79,12 +88,21 @@ bool loadLuaLibrary(lua_State *L, String libraryName) {
     else:
         luaLibraries_gen_cpp += """
 bool loadLuaLibrary(lua_State *L, String libraryName) {
-	const char *lib_c_str = libraryName.ascii().get_data();
-	if (luaLibraries[lib_c_str] == nullptr) {
+	// The CharString owns the buffer get_data() points at, so it has to outlive
+	// every use of lib_c_str. Reading it from a temporary left the name pointing
+	// at freed memory, which registered libraries under whatever happened to be
+	// there.
+	CharString libraryNameAscii = libraryName.ascii();
+	const char *lib_c_str = libraryNameAscii.get_data();
+
+	// find rather than operator[], which inserts a null entry for every name
+	// that does not exist.
+	auto library = luaLibraries.find(lib_c_str);
+	if (library == luaLibraries.end() || library->second == nullptr) {
 		return false;
 	}
 
-	luaL_requiref(L, lib_c_str, luaLibraries[lib_c_str], 1);
+	luaL_requiref(L, lib_c_str, library->second, 1);
 	lua_pop(L, 1);
 	return true;
 }
